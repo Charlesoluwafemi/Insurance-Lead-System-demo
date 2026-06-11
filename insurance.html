@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Insurance Lead Conversion System – Above The Rest</title>
+<style>
+  :root {
+    --navy: #1B2A4A;
+    --navy-light: #253860;
+    --gold: #C9933A;
+    --gold-light: #E5AA52;
+    --charcoal: #2C2C2C;
+    --slate: #6B6B6B;
+    --cream: #FAF7F2;
+    --white: #FFFFFF;
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --s-new-bg: #DBEAFE; --s-new-text: #1E40AF;
+    --s-unopened-bg: #F3F4F6; --s-unopened-text: #374151;
+    --s-opened-bg: #FEF9C3; --s-opened-text: #854D0E;
+    --s-responded-bg: #DCFCE7; --s-responded-text: #166534;
+    --s-nonresp-bg: #FEE2E2; --s-nonresp-text: #991B1B;
+    --s-contacted-bg: #F3E8FF; --s-contacted-text: #6B21A8;
+    --s-won-bg: #ECFDF5; --s-won-text: #065F46;
+    --s-lost-bg: #FFE4E6; --s-lost-text: #BE123C;
+    --sidebar-width: 240px;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 16px rgba(27,42,74,0.09);
+    --shadow-lg: 0 8px 32px rgba(27,42,74,0.14);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 14px; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #EEF1F7;
+    color: var(--charcoal);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* LANDING */
+  #landing {
+    position: fixed; inset: 0; z-index: 1000;
+    background: linear-gradient(135deg, #0F1C33 0%, #1B2A4A 50%, #253860 100%);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; text-align: center; padding: 2rem;
+    transition: opacity 0.7s ease;
+  }
+  #landing .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(201,147,58,0.15); border: 1px solid rgba(201,147,58,0.4);
+    color: var(--gold-light); font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 100px; margin-bottom: 2rem;
+  }
+  #landing h1 {
+    font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800;
+    color: #fff; line-height: 1.15; max-width: 760px; margin-bottom: 1.2rem;
+  }
+  #landing h1 span { color: var(--gold); }
+  #landing p {
+    color: rgba(255,255,255,0.62); font-size: 1.05rem;
+    max-width: 520px; margin-bottom: 2.5rem; line-height: 1.7;
+  }
+  #runDemoBtn {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: #fff; border: none; padding: 16px 40px;
+    font-size: 1.05rem; font-weight: 700; border-radius: 50px;
+    cursor: pointer; box-shadow: 0 6px 28px rgba(201,147,58,0.45);
+    transition: transform 0.18s, box-shadow 0.18s; letter-spacing: 0.02em;
+  }
+  #runDemoBtn:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(201,147,58,0.55); }
+  .landing-stats { display: flex; gap: 2.5rem; margin-top: 3rem; flex-wrap: wrap; justify-content: center; }
+  .landing-stat { color: rgba(255,255,255,0.55); font-size: 0.82rem; text-align: center; }
+  .landing-stat strong { display: block; color: var(--gold); font-size: 1.6rem; font-weight: 800; }
+  .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ADE80; display: inline-block; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+  /* APP SHELL */
+  #app { display: none; min-height: 100vh; }
+  #app.visible { display: flex; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-width); background: var(--navy);
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; height: 100vh;
+    z-index: 100; box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+  }
+  .sidebar-logo { padding: 1.6rem 1.4rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .sidebar-logo .logo-name { font-size: 1.05rem; font-weight: 800; color: #fff; letter-spacing: -0.01em; line-height: 1.2; }
+  .sidebar-logo .logo-sub { font-size: 0.72rem; color: rgba(255,255,255,0.45); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+  .sidebar-logo .shield-icon {
+    width: 36px; height: 36px; background: linear-gradient(135deg,var(--gold),var(--gold-light));
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px; font-size: 1.1rem;
+  }
+  nav.sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+  .nav-label { font-size: 0.67rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); padding: 0.8rem 1.4rem 0.4rem; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 1.4rem; color: rgba(255,255,255,0.6);
+    font-size: 0.88rem; font-weight: 500; cursor: pointer;
+    transition: background 0.15s, color 0.15s; position: relative;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: rgba(201,147,58,0.13); color: #fff; border-right: 3px solid var(--gold); }
+  .nav-item .nav-icon { font-size: 1rem; width: 18px; text-align: center; }
+  .nav-badge { margin-left: auto; background: var(--gold); color: #fff; font-size: 0.65rem; font-weight: 700; border-radius: 50px; padding: 2px 7px; min-width: 18px; text-align: center; }
+  .sidebar-bottom { border-top: 1px solid rgba(255,255,255,0.07); padding: 1rem 1.2rem; }
+  .profile-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.05); margin-bottom: 8px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,var(--gold),var(--gold-light)); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 0.85rem; flex-shrink: 0; }
+  .profile-info .profile-name { color: #fff; font-size: 0.82rem; font-weight: 600; }
+  .profile-info .profile-role { color: rgba(255,255,255,0.4); font-size: 0.72rem; }
+  .signout-btn { width: 100%; padding: 9px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); border-radius: var(--radius-sm); font-size: 0.8rem; cursor: pointer; transition: background 0.15s, color 0.15s; text-align: center; }
+  .signout-btn:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.8); }
+
+  /* MAIN CONTENT */
+  .main-content { margin-left: var(--sidebar-width); flex: 1; overflow-y: auto; min-height: 100vh; }
+  .topbar {
+    background: var(--white); border-bottom: 1px solid var(--gray-200);
+    padding: 1rem 2rem; display: flex; align-items: center;
+    justify-content: space-between; position: sticky; top: 0; z-index: 50;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+  }
+  .topbar-left h2 { font-size: 1.2rem; font-weight: 700; color: var(--charcoal); }
+  .topbar-left p { font-size: 0.8rem; color: var(--slate); margin-top: 1px; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .sim-status { display: flex; align-items: center; gap: 6px; background: #DCFCE7; color: #166534; font-size: 0.78rem; font-weight: 600; padding: 6px 12px; border-radius: 50px; }
+  .content-area { padding: 1.6rem 2rem 3rem; }
+
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.4rem; }
+  .kpi-card { background: var(--white); border-radius: var(--radius); padding: 1.2rem 1.4rem; box-shadow: var(--shadow); border: 1px solid var(--gray-200); transition: transform 0.2s, box-shadow 0.2s; }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .kpi-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; }
+  .kpi-label { font-size: 0.75rem; font-weight: 600; color: var(--slate); text-transform: uppercase; letter-spacing: 0.05em; }
+  .kpi-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+  .kpi-value { font-size: 2rem; font-weight: 800; color: var(--charcoal); line-height: 1; margin-bottom: 4px; }
+  .kpi-delta { font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 3px; }
+  .kpi-delta.up { color: #16A34A; }
+  .kpi-delta.down { color: #DC2626; }
+
+  /* PANELS */
+  .panel-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .panel-grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .panel { background: var(--white); border-radius: var(--radius); padding: 1.4rem; box-shadow: var(--shadow); border: 1px solid var(--gray-200); }
+  .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
+  .panel-title { font-size: 0.92rem; font-weight: 700; color: var(--charcoal); }
+  .panel-sub { font-size: 0.75rem; color: var(--slate); margin-top: 1px; }
+  .panel-action { font-size: 0.75rem; color: var(--gold); font-weight: 600; cursor: pointer; background: none; border: none; }
+
+  /* BUTTONS */
+  .btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px; border-radius: var(--radius-sm); font-size: 0.83rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.18s; }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-primary:hover { background: var(--navy-light); transform: translateY(-1px); }
+  .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: #fff; box-shadow: 0 4px 14px rgba(201,147,58,0.35); }
+  .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,147,58,0.45); }
+  .btn-outline { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+  .btn-outline:hover { background: var(--navy); color: #fff; }
+  .btn-danger { background: #EF4444; color: #fff; }
+  .btn-danger:hover { background: #DC2626; }
+  .btn-sm { padding: 7px 14px; font-size: 0.78rem; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+  /* BADGES */
+  .badge { font-size: 0.7rem; font-weight: 700; padding: 3px 9px; border-radius: 50px; white-space: nowrap; }
+  .badge-new { background: var(--s-new-bg); color: var(--s-new-text); }
+  .badge-unopened { background: var(--s-unopened-bg); color: var(--s-unopened-text); }
+  .badge-opened { background: var(--s-opened-bg); color: var(--s-opened-text); }
+  .badge-responded { background: var(--s-responded-bg); color: var(--s-responded-text); }
+  .badge-nonresp { background: var(--s-nonresp-bg); color: var(--s-nonresp-text); }
+  .badge-contacted { background: var(--s-contacted-bg); color: var(--s-contacted-text); }
+  .badge-won { background: var(--s-won-bg); color: var(--s-won-text); }
+  .badge-lost { background: var(--s-lost-bg); color: var(--s-lost-text); }
+  .ins-badge { font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+  .ins-auto { background: #DBEAFE; color: #1E40AF; }
+  .ins-health { background: #DCFCE7; color: #166534; }
+  .ins-life { background: #F3E8FF; color: #6B21A8; }
+  .ins-home { background: #FEF3C7; color: #92400E; }
+  .ins-medicare { background: #FCE7F3; color: #9D174D; }
+
+  /* LEAD TABLE */
+  .lead-table-wrap { overflow-x: auto; }
+  table.lead-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .lead-table th { text-align: left; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate); padding: 9px 12px; border-bottom: 1px solid var(--gray-200); background: var(--gray-50); }
+  .lead-table td { padding: 11px 12px; border-bottom: 1px solid var(--gray-200); vertical-align: middle; }
+  .lead-table tr:last-child td { border-bottom: none; }
+  .lead-table tr { transition: background 0.15s; cursor: pointer; }
+  .lead-table tr:hover td { background: var(--cream); }
+  .lead-table tr.highlight td { background: rgba(201,147,58,0.06); }
+  .lead-name { font-weight: 600; color: var(--charcoal); }
+  .lead-phone { font-size: 0.72rem; color: var(--slate); }
+  .score-wrap { display: flex; align-items: center; gap: 6px; }
+  .score-num { font-weight: 700; font-size: 0.85rem; color: var(--navy); min-width: 24px; }
+  .score-bar { width: 50px; height: 5px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 3px; }
+  .score-high { background: #10B981; }
+  .score-mid { background: #F59E0B; }
+  .score-low { background: #EF4444; }
+  .agent-cell { display: flex; align-items: center; gap: 6px; }
+  .agent-av { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .time-cell { color: var(--slate); font-size: 0.75rem; }
+
+  /* FUNNEL */
+  .funnel-stages { display: flex; flex-direction: column; gap: 6px; }
+  .funnel-stage { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-sm); background: var(--gray-50); border: 1px solid var(--gray-200); transition: all 0.3s; }
+  .funnel-stage.active { border-color: var(--gold); background: rgba(201,147,58,0.06); }
+  .funnel-stage-label { font-size: 0.8rem; font-weight: 600; color: var(--charcoal); flex: 1; }
+  .funnel-bar-wrap { width: 110px; height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
+  .funnel-bar { height: 100%; border-radius: 4px; transition: width 1.2s ease; }
+  .funnel-count { font-size: 0.8rem; font-weight: 700; color: var(--charcoal); min-width: 28px; text-align: right; }
+  .funnel-pct { font-size: 0.72rem; color: var(--slate); min-width: 32px; text-align: right; }
+
+  /* ACTIVITY FEED */
+  #activityFeed { max-height: 310px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+  .activity-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px; border-radius: var(--radius-sm); background: var(--gray-50); border-left: 3px solid transparent; animation: slideIn 0.35s ease; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+  .activity-item.type-ai { border-left-color: #8B5CF6; }
+  .activity-item.type-sms { border-left-color: #0EA5E9; }
+  .activity-item.type-email { border-left-color: #F59E0B; }
+  .activity-item.type-lead { border-left-color: var(--gold); }
+  .activity-item.type-won { border-left-color: #10B981; }
+  .activity-item.type-warn { border-left-color: #EF4444; }
+  .activity-icon { font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
+  .activity-body { flex: 1; }
+  .activity-text { font-size: 0.8rem; color: var(--charcoal); line-height: 1.4; }
+  .activity-text strong { color: var(--navy); }
+  .activity-time { font-size: 0.7rem; color: var(--slate); margin-top: 2px; }
+  .activity-tag { font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; align-self: flex-start; }
+
+  /* LEADERBOARD */
+  .lb-list { display: flex; flex-direction: column; gap: 8px; }
+  .lb-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: var(--radius-sm); background: var(--gray-50); border: 1px solid var(--gray-200); transition: background 0.2s; }
+  .lb-item:first-child { background: rgba(201,147,58,0.07); border-color: rgba(201,147,58,0.3); }
+  .lb-rank { width: 22px; height: 22px; border-radius: 50%; background: var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: var(--slate); flex-shrink: 0; }
+  .lb-item:first-child .lb-rank { background: var(--gold); color: #fff; }
+  .lb-name { font-size: 0.82rem; font-weight: 600; color: var(--charcoal); }
+  .lb-type { font-size: 0.7rem; color: var(--slate); }
+  .lb-score-bar { width: 60px; height: 5px; background: var(--gray-200); border-radius: 3px; overflow: hidden; margin-top: 4px; margin-left: auto; }
+  .lb-score-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,var(--gold),var(--gold-light)); transition: width 1s ease; }
+
+  /* FOLLOW-UP TIMELINE */
+  .followup-timeline { display: flex; flex-direction: column; gap: 0; }
+  .ft-item { display: flex; align-items: flex-start; gap: 14px; padding: 10px 0; position: relative; }
+  .ft-item:not(:last-child)::after { content: ''; position: absolute; left: 11px; top: 32px; width: 2px; height: calc(100% - 10px); background: var(--gray-200); }
+  .ft-dot { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; z-index: 1; border: 2px solid var(--gray-200); background: var(--white); color: var(--slate); transition: all 0.5s; }
+  .ft-dot.done { background: #10B981; border-color: #10B981; color: #fff; }
+  .ft-dot.active { background: var(--gold); border-color: var(--gold); color: #fff; animation: pulse 1.4s infinite; }
+  .ft-content { flex: 1; padding-top: 2px; }
+  .ft-day { font-size: 0.72rem; font-weight: 700; color: var(--slate); text-transform: uppercase; letter-spacing: 0.05em; }
+  .ft-msg { font-size: 0.8rem; color: var(--charcoal); margin-top: 1px; }
+  .ft-status { font-size: 0.7rem; color: var(--slate); margin-top: 2px; }
+  .ft-status.sent { color: #10B981; font-weight: 600; }
+
+  /* METRIC MINI */
+  .metrics-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 0.8rem; }
+  .metric-mini { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 10px; text-align: center; }
+  .metric-mini .mm-val { font-size: 1.2rem; font-weight: 800; color: var(--navy); }
+  .metric-mini .mm-label { font-size: 0.68rem; color: var(--slate); margin-top: 2px; }
+
+  /* INSIGHT ALERT */
+  .insight-alert { background: linear-gradient(135deg, #FFF7E6, #FFF3D0); border: 1px solid #F59E0B; border-radius: var(--radius); padding: 1rem 1.4rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 14px; }
+  .insight-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .insight-text { font-size: 0.82rem; color: #92400E; }
+  .insight-text strong { font-weight: 700; display: block; margin-bottom: 2px; }
+
+  /* SIMULATION LOG */
+  .sim-log { background: #0F172A; border-radius: var(--radius-sm); padding: 1rem; max-height: 220px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.75rem; margin-top: 1rem; }
+  .sim-log .log-line { color: #94A3B8; padding: 2px 0; animation: slideIn 0.3s ease; }
+  .sim-log .log-line.log-success { color: #4ADE80; }
+  .sim-log .log-line.log-warn { color: #FCD34D; }
+  .sim-log .log-line.log-info { color: #60A5FA; }
+  .sim-log .log-line.log-ai { color: #C084FC; }
+
+  /* STEP INDICATOR */
+  .step-indicator { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--gray-50); border: 1px solid var(--gray-200); margin-bottom: 6px; transition: all 0.4s; opacity: 0.4; }
+  .step-indicator.active { opacity: 1; border-color: var(--gold); background: #FFFBEB; }
+  .step-indicator.done { opacity: 1; border-color: #10B981; background: #F0FDF4; }
+  .step-ind-icon { font-size: 1rem; }
+  .step-ind-text { font-size: 0.82rem; font-weight: 500; flex: 1; }
+  .step-ind-status { font-size: 0.75rem; font-weight: 600; }
+  .step-ind-status.spinning { color: var(--gold); animation: spin 0.8s linear infinite; }
+  .step-ind-status.done { color: #10B981; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  /* LEAD DETAIL PANEL */
+  .lead-detail-panel { background: var(--white); border-radius: var(--radius); padding: 1.6rem; box-shadow: var(--shadow-lg); border: 1px solid var(--gray-200); animation: slideIn 0.3s ease; margin-top: 1rem; }
+  .ldp-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.2rem; }
+  .ldp-name { font-size: 1.3rem; font-weight: 800; color: var(--navy); }
+  .ldp-meta { font-size: 0.8rem; color: var(--slate); margin-top: 4px; }
+  .ldp-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
+  .ldp-section { margin-top: 1.2rem; }
+  .ldp-section-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slate); margin-bottom: 8px; }
+  .ldp-ai-response { background: #F3E8FF; border: 1px solid #DDD6FE; border-radius: var(--radius-sm); padding: 12px; font-size: 0.82rem; color: #4C1D95; line-height: 1.6; }
+
+  /* RECOVERY CARDS */
+  .recovery-card { background: var(--white); border-radius: var(--radius); padding: 1.4rem; box-shadow: var(--shadow); border: 1px solid var(--gray-200); margin-bottom: 10px; display: flex; align-items: center; gap: 14px; transition: all 0.3s; }
+  .recovery-card.revived { border-color: #10B981; background: #F0FDF4; }
+  .recovery-av { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .recovery-info { flex: 1; }
+  .recovery-name { font-size: 0.9rem; font-weight: 700; color: var(--charcoal); }
+  .recovery-meta { font-size: 0.75rem; color: var(--slate); margin-top: 2px; }
+  .recovery-status { font-size: 0.75rem; font-weight: 600; margin-top: 4px; }
+  .recovery-status.idle { color: var(--slate); }
+  .recovery-status.scanning { color: var(--gold); }
+  .recovery-status.done { color: #10B981; }
+
+  /* LEAKAGE */
+  .leakage-bar-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .leakage-label { font-size: 0.8rem; font-weight: 600; color: var(--charcoal); min-width: 160px; }
+  .leakage-bar-wrap { flex: 1; height: 10px; background: var(--gray-200); border-radius: 5px; overflow: hidden; }
+  .leakage-bar-fill { height: 100%; border-radius: 5px; transition: width 1.2s ease; }
+  .leakage-pct { font-size: 0.8rem; font-weight: 700; min-width: 36px; text-align: right; }
+
+  /* AGENT PERF */
+  .agent-perf-card { background: var(--white); border-radius: var(--radius); padding: 1.4rem; box-shadow: var(--shadow); border: 1px solid var(--gray-200); margin-bottom: 10px; transition: all 0.3s; }
+  .agent-perf-card:first-child { border-color: var(--gold); }
+  .agent-perf-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .agent-perf-av { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .agent-stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+  .agent-stat { text-align: center; background: var(--gray-50); border-radius: 8px; padding: 10px 6px; border: 1px solid var(--gray-200); }
+  .agent-stat .as-val { font-size: 1.1rem; font-weight: 800; color: var(--navy); }
+  .agent-stat .as-label { font-size: 0.65rem; color: var(--slate); margin-top: 2px; }
+
+  /* MODAL */
+  #aiModal { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.45); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 1rem; }
+  #aiModal.open { display: flex; }
+  .modal-card { background: var(--white); border-radius: var(--radius); padding: 1.8rem; width: 100%; max-width: 480px; box-shadow: var(--shadow-lg); animation: popIn 0.25s ease; }
+  @keyframes popIn { from{transform:scale(0.93);opacity:0} to{transform:scale(1);opacity:1} }
+  .modal-title { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .modal-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.2rem; }
+  .modal-step { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--gray-50); border: 1px solid var(--gray-200); opacity: 0; transform: translateX(-12px); transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.4s; }
+  .modal-step.done { opacity: 1; transform: translateX(0); border-color: #10B981; background: #F0FDF4; }
+  .modal-step.active { opacity: 1; transform: translateX(0); border-color: var(--gold); background: #FFFBEB; }
+  .step-icon { font-size: 1.1rem; }
+  .step-text { font-size: 0.82rem; font-weight: 500; color: var(--charcoal); flex: 1; }
+  .step-check { font-size: 0.9rem; color: #10B981; font-weight: 700; }
+  .modal-close { width: 100%; padding: 11px; background: var(--navy); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 600; cursor: pointer; margin-top: 0.5rem; transition: background 0.15s; }
+  .modal-close:hover { background: var(--navy-light); }
+
+  /* TOAST */
+  #toastContainer { position: fixed; top: 80px; right: 20px; z-index: 999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+  .toast { background: var(--white); border-radius: var(--radius-sm); padding: 11px 14px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 9px; min-width: 280px; max-width: 340px; pointer-events: auto; animation: toastIn 0.3s ease; border-left: 4px solid var(--gold); }
+  .toast.toast-success { border-left-color: #10B981; }
+  .toast.toast-warn { border-left-color: #EF4444; }
+  .toast.toast-info { border-left-color: #0EA5E9; }
+  @keyframes toastIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+  @keyframes toastOut { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(100%)} }
+  .toast-icon { font-size: 1rem; }
+  .toast-text { font-size: 0.8rem; color: var(--charcoal); flex: 1; }
+  .toast-text strong { font-weight: 700; display: block; }
+  .toast-close { font-size: 1rem; color: var(--slate); cursor: pointer; background: none; border: none; }
+
+  /* APPOINTMENTS */
+  .appt-list { display: flex; flex-direction: column; gap: 8px; }
+  .appt-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: var(--radius-sm); background: var(--gray-50); border: 1px solid var(--gray-200); }
+  .appt-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .appt-info { flex: 1; }
+  .appt-name { font-size: 0.82rem; font-weight: 600; color: var(--charcoal); }
+  .appt-type { font-size: 0.72rem; color: var(--slate); }
+  .appt-time { font-size: 0.78rem; font-weight: 700; color: var(--navy); text-align: right; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
+
+  @media (max-width: 1100px) {
+    .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    .panel-grid-2, .panel-grid-3 { grid-template-columns: 1fr; }
+    .agent-stat-grid { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="landing">
+  <div class="badge"><span class="pulse-dot"></span> AI-Powered · Live System</div>
+  <h1>Turn Every Insurance Lead Into a <span>Paying Policy</span> Automatically</h1>
+  <p>Watch how Above The Rest's AI engine captures, qualifies, and converts insurance leads — in real time, without manual work.</p>
+  <button id="runDemoBtn" onclick="startDemo()">⚡ Enter Dashboard</button>
+  <div class="landing-stats">
+    <div class="landing-stat"><strong>3.2s</strong>Average Response</div>
+    <div class="landing-stat"><strong>87%</strong>Lead Capture Rate</div>
+    <div class="landing-stat"><strong>4.1×</strong>Conversion Lift</div>
+    <div class="landing-stat"><strong>$0</strong>Leads Left Behind</div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="shield-icon">🛡️</div>
+      <div class="logo-name">Above The Rest</div>
+      <div class="logo-sub">Business Advisors</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Main</div>
+      <div class="nav-item active" onclick="switchView('dashboard')"><span class="nav-icon">📊</span>Dashboard</div>
+      <div class="nav-item" onclick="switchView('leads')"><span class="nav-icon">👥</span>Leads <span class="nav-badge" id="leadBadge">12</span></div>
+      <div class="nav-item" onclick="switchView('lost')"><span class="nav-icon">💸</span>Lost Lead Recovery <span class="nav-badge" id="lostBadge">8</span></div>
+      <div class="nav-item" onclick="switchView('leakage')"><span class="nav-icon">📉</span>Lead Leakage Tracker</div>
+      <div class="nav-item" onclick="switchView('missed')"><span class="nav-icon">📞</span>Missed Call Recovery <span class="nav-badge" id="missedBadge">4</span></div>
+      <div class="nav-item" onclick="switchView('followup')"><span class="nav-icon">🔁</span>Follow-Up Queue <span class="nav-badge" id="fupBadge">5</span></div>
+      <div class="nav-item" onclick="switchView('agents')"><span class="nav-icon">🏆</span>Agent Performance</div>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="profile-card">
+        <div class="avatar">JD</div>
+        <div class="profile-info">
+          <div class="profile-name">Jordan Davis</div>
+          <div class="profile-role">Admin · Agency Owner</div>
+        </div>
+      </div>
+      <button class="signout-btn" onclick="showToast('Signed out', 'Redirecting to login...', 'warn')">Sign out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h2 id="topbarTitle">Dashboard</h2>
+        <p>Welcome back, Admin · <span id="liveTime"></span></p>
+      </div>
+      <div class="topbar-right">
+        <div class="sim-status"><span class="pulse-dot"></span> AI Active</div>
+      </div>
+    </div>
+    <div class="content-area" id="contentArea"></div>
+  </div>
+</div>
+
+<!-- AI PROCESSING MODAL -->
+<div id="aiModal">
+  <div class="modal-card">
+    <div class="modal-title">🧠 AI Lead Processing Engine</div>
+    <div id="modalLeadInfo" style="font-size:0.82rem;color:var(--slate);margin-bottom:1rem;padding:10px;background:var(--gray-50);border-radius:8px"></div>
+    <div class="modal-steps" id="modalSteps">
+      <div class="modal-step" id="ms1"><span class="step-icon">📥</span><span class="step-text">Lead received from web form</span><span class="step-check"></span></div>
+      <div class="modal-step" id="ms2"><span class="step-icon">🧠</span><span class="step-text">AI classifying insurance type & intent...</span><span class="step-check"></span></div>
+      <div class="modal-step" id="ms3"><span class="step-icon">⚡</span><span class="step-text">Scoring lead (0–100)...</span><span class="step-check"></span></div>
+      <div class="modal-step" id="ms4"><span class="step-icon">📲</span><span class="step-text">Sending SMS response instantly</span><span class="step-check"></span></div>
+      <div class="modal-step" id="ms5"><span class="step-icon">📧</span><span class="step-text">Sending email confirmation</span><span class="step-check"></span></div>
+      <div class="modal-step" id="ms6"><span class="step-icon">👤</span><span class="step-text">Routing to best-fit agent</span><span class="step-check"></span></div>
+      <div class="modal-step" id="ms7"><span class="step-icon">📅</span><span class="step-text">Scheduling follow-up sequence</span><span class="step-check"></span></div>
+      <div class="modal-step" id="ms8"><span class="step-icon">✅</span><span class="step-text">CRM updated · Lead is live</span><span class="step-check"></span></div>
+    </div>
+    <button class="modal-close" id="modalCloseBtn" style="display:none" onclick="closeAiModal()">Lead Processed — Close</button>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script>
+/* ════════ STATE ════════ */
+let currentView = 'dashboard';
+let kpiLeads = 24, kpiClosed = 7;
+let simStarted = false;
+let funnelData = [24, 19, 13, 8, 5];
+
+/* ════════ DATA ════════ */
+const LEADS_DATA = [
+  { id:1, name:'Marcus Webb', phone:'(555) 201-4432', type:'Auto', status:'new', score:92, agent:'Priya S.', agentColor:'#4F46E5', time:'2 min ago', highlight:true },
+  { id:2, name:'Linda Torres', phone:'(555) 309-7761', type:'Health', status:'responded', score:78, agent:'Carlos M.', agentColor:'#0891B2', time:'14 min ago', highlight:false },
+  { id:3, name:'Derek Osei', phone:'(555) 478-9023', type:'Life', status:'contacted', score:65, agent:'Priya S.', agentColor:'#4F46E5', time:'38 min ago', highlight:false },
+  { id:4, name:'Sharon Pace', phone:'(555) 662-1540', type:'Home', status:'opened', score:54, agent:'TJ Brooks', agentColor:'#059669', time:'1 hr ago', highlight:false },
+  { id:5, name:'Ray Hoang', phone:'(555) 715-3388', type:'Medicare', status:'nonresp', score:41, agent:'Carlos M.', agentColor:'#0891B2', time:'2 hr ago', highlight:false },
+  { id:6, name:'Destiny Cole', phone:'(555) 883-0096', type:'Auto', status:'won', score:97, agent:'TJ Brooks', agentColor:'#059669', time:'3 hr ago', highlight:false },
+  { id:7, name:'Alan Mercer', phone:'(555) 920-5512', type:'Health', status:'lost', score:22, agent:'Priya S.', agentColor:'#4F46E5', time:'5 hr ago', highlight:false },
+  { id:8, name:'Nadia Ruiz', phone:'(555) 101-7743', type:'Life', status:'new', score:88, agent:'TJ Brooks', agentColor:'#059669', time:'Just now', highlight:false },
+  { id:9, name:'Carlos Vega', phone:'(555) 334-2219', type:'Auto', status:'nonresp', score:39, agent:'Priya S.', agentColor:'#4F46E5', time:'4 hr ago', highlight:false },
+  { id:10, name:'Monique Bell', phone:'(555) 447-8801', type:'Medicare', status:'new', score:71, agent:'Carlos M.', agentColor:'#0891B2', time:'6 hr ago', highlight:false },
+];
+
+const AGENTS = [
+  { name:'Priya Singh', initials:'PS', type:'Auto · Life', closed:18, rate:'74%', resp:'2.1s', score:93, color:'#4F46E5', revenue:'$84K' },
+  { name:'TJ Brooks', initials:'TJ', type:'Home · Medicare', closed:15, rate:'68%', resp:'3.4s', score:81, color:'#059669', revenue:'$61K' },
+  { name:'Carlos Morales', initials:'CM', type:'Health · Auto', closed:12, rate:'61%', resp:'4.2s', score:74, color:'#0891B2', revenue:'$49K' },
+  { name:'Nia Johnson', initials:'NJ', type:'Life · Health', closed:9, rate:'55%', resp:'5.8s', score:62, color:'#D97706', revenue:'$36K' },
+];
+
+const LOST_LEADS = [
+  { name:'Ray Hoang', phone:'(555) 715-3388', type:'Medicare', days:3, reason:'No response after quote', color:'#DC2626' },
+  { name:'Alan Mercer', phone:'(555) 920-5512', type:'Health', days:7, reason:'Price objection, went cold', color:'#7C3AED' },
+  { name:'Carlos Vega', phone:'(555) 334-2219', type:'Auto', days:2, reason:'Missed follow-up call', color:'#0891B2' },
+  { name:'Teresa Grant', phone:'(555) 228-0031', type:'Life', days:14, reason:'Comparison shopping', color:'#059669' },
+  { name:'Frank Kim', phone:'(555) 519-4477', type:'Home', days:5, reason:'Unresponsive after SMS', color:'#92400E' },
+  { name:'April Moore', phone:'(555) 663-2109', type:'Auto', days:1, reason:'Callback missed', color:'#DC2626' },
+  { name:'Sam Okafor', phone:'(555) 777-3321', type:'Medicare', days:10, reason:'Interest dropped', color:'#0891B2' },
+  { name:'Diana West', phone:'(555) 884-0052', type:'Health', days:4, reason:'Went with competitor', color:'#7C3AED' },
+];
+
+const MISSED_CALLS = [
+  { name:'James Parker', phone:'(555) 112-3344', type:'Auto', time:'9:14 AM', agent:'Priya S.' },
+  { name:'Lena Foster', phone:'(555) 223-4455', type:'Health', time:'10:32 AM', agent:'Carlos M.' },
+  { name:'Omar Diaz', phone:'(555) 334-5566', type:'Life', time:'11:45 AM', agent:'TJ Brooks' },
+  { name:'Cheryl Nash', phone:'(555) 445-6677', type:'Medicare', time:'1:07 PM', agent:'Carlos M.' },
+];
+
+const ACTIVITY_POOL = [
+  { type:'lead', icon:'📥', text:'<strong>New Lead:</strong> Marcus Webb — Auto Insurance inquiry', tag:'NEW', tagStyle:'background:#DBEAFE;color:#1E40AF' },
+  { type:'ai', icon:'🧠', text:'<strong>AI classified:</strong> High-intent Auto Insurance lead detected — Score: 92', tag:'AI', tagStyle:'background:#F3E8FF;color:#6B21A8' },
+  { type:'sms', icon:'💬', text:'<strong>SMS sent</strong> to Marcus Webb in 2.1 seconds — "Your quote is ready!"', tag:'SMS', tagStyle:'background:#DBEAFE;color:#1E40AF' },
+  { type:'email', icon:'📧', text:'<strong>Email sent</strong> to marcus@email.com — quote attachment included', tag:'EMAIL', tagStyle:'background:#FEF9C3;color:#854D0E' },
+  { type:'lead', icon:'🔀', text:'<strong>Lead routed</strong> to Priya Singh (Auto specialist, 74% conversion rate)', tag:'ROUTED', tagStyle:'background:#F3E8FF;color:#6B21A8' },
+  { type:'warn', icon:'⚠️', text:'<strong>Lost Lead Recovery:</strong> Ray Hoang inactive 2 hrs — reactivation triggered', tag:'ALERT', tagStyle:'background:#FEE2E6;color:#991B1B' },
+  { type:'sms', icon:'📲', text:'<strong>Follow-up SMS</strong> sent to Ray Hoang — Day 1 sequence step', tag:'AUTO', tagStyle:'background:#DCFCE7;color:#166534' },
+  { type:'won', icon:'🏆', text:'<strong>POLICY CLOSED:</strong> Destiny Cole — Auto Insurance $1,840/yr premium', tag:'WON', tagStyle:'background:#ECFDF5;color:#065F46' },
+  { type:'lead', icon:'📥', text:'<strong>New Lead:</strong> Nadia Ruiz — Life Insurance via Facebook Ad', tag:'NEW', tagStyle:'background:#DBEAFE;color:#1E40AF' },
+  { type:'ai', icon:'🧠', text:'<strong>AI classified:</strong> Life Insurance — High urgency — Score: 88', tag:'AI', tagStyle:'background:#F3E8FF;color:#6B21A8' },
+  { type:'email', icon:'🔔', text:'<strong>Renewal reminder</strong> sent to 3 clients — policies expiring in 30 days', tag:'RENEWAL', tagStyle:'background:#FEF9C3;color:#854D0E' },
+  { type:'won', icon:'📅', text:'<strong>Appointment booked:</strong> Linda Torres — Health plan demo for tomorrow', tag:'BOOKED', tagStyle:'background:#ECFDF5;color:#065F46' },
+];
+
+/* ════════ HELPERS ════════ */
+function statusBadge(s) {
+  const map = { new:'badge-new', unopened:'badge-unopened', opened:'badge-opened', responded:'badge-responded', nonresp:'badge-nonresp', contacted:'badge-contacted', won:'badge-won', lost:'badge-lost' };
+  const labels = { new:'New', unopened:'Unopened', opened:'Opened', responded:'Responded', nonresp:'Non-Responsive', contacted:'Contacted', won:'Won', lost:'Lost' };
+  return `<span class="badge ${map[s]||'badge-unopened'}">${labels[s]||s}</span>`;
+}
+function insBadge(t) {
+  const map = { Auto:'ins-auto', Health:'ins-health', Life:'ins-life', Home:'ins-home', Medicare:'ins-medicare' };
+  const icons = { Auto:'🚗', Health:'🏥', Life:'❤️', Home:'🏠', Medicare:'💊' };
+  return `<span class="ins-badge ${map[t]||'ins-auto'}">${icons[t]||''} ${t}</span>`;
+}
+function scoreClass(n) { return n >= 75 ? 'score-high' : n >= 50 ? 'score-mid' : 'score-low'; }
+function now() { return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function rand(a,b) { return Math.floor(Math.random()*(b-a+1))+a; }
+
+function showToast(text, sub='', type='default') {
+  const icons = { default:'🔔', success:'✅', warn:'⚠️', info:'💬' };
+  const tc = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<span class="toast-icon">${icons[type]||'🔔'}</span><div class="toast-text"><strong>${text}</strong>${sub?'<br>'+sub:''}</div><button class="toast-close" onclick="this.parentElement.remove()">×</button>`;
+  tc.appendChild(t);
+  setTimeout(()=>{ t.style.animation='toastOut 0.3s ease forwards'; setTimeout(()=>t.remove(),300); }, 4500);
+}
+
+function addLog(containerId, text, type='') {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const line = document.createElement('div');
+  line.className = `log-line${type?' log-'+type:''}`;
+  line.textContent = `[${now()}] ${text}`;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+
+/* ════════ ROUTING ════════ */
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${view}'`)) {
+      item.classList.add('active');
+    }
+  });
+  const titles = { dashboard:'Dashboard', leads:'Leads', lost:'Lost Lead Recovery', leakage:'Lead Leakage Tracker', missed:'Missed Call Recovery', followup:'Follow-Up Queue', agents:'Agent Performance' };
+  document.getElementById('topbarTitle').textContent = titles[view] || view;
+  render();
+}
+
+function render() {
+  const area = document.getElementById('contentArea');
+
+  const views = {
+    dashboard: dashboardUI,
+    leads: leadsUI,
+    lost: lostLeadUI,
+    leakage: leakageUI,
+    missed: missedCallUI,
+    followup: followUpUI,
+    agents: agentUI
+  };
+
+  const viewFn = views[currentView] || dashboardUI;
+
+  area.innerHTML = viewFn();
+
+  if (currentView === 'dashboard' && typeof initDashboard === "function") {
+    initDashboard();
+  }
+}
+
+function startDemo() {
+  currentView = "dashboard";
+  render();
+}
+/* ════════ DASHBOARD ════════ */
+function dashboardUI() {
+  return `
+    <div class="insight-alert">
+      <div class="insight-icon">⚠️</div>
+      <div class="insight-text">
+        <strong>Lead Leakage Warning</strong>
+        38% of uncontacted leads go cold within 5 minutes. Your AI response engine is now active and responding to every lead in under 4 seconds.
+      </div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header"><div class="kpi-label">Total Leads Today</div><div class="kpi-icon" style="background:#DBEAFE">📥</div></div>
+        <div class="kpi-value" id="kpiLeads">${kpiLeads}</div>
+        <div class="kpi-delta up">↑ +${Math.max(0,kpiLeads-8)} vs yesterday</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header"><div class="kpi-label">Avg Response Time</div><div class="kpi-icon" style="background:#DCFCE7">⚡</div></div>
+        <div class="kpi-value">3.2s</div>
+        <div class="kpi-delta up">↓ 94% faster than industry avg</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header"><div class="kpi-label">Conversion Rate</div><div class="kpi-icon" style="background:#F3E8FF">🎯</div></div>
+        <div class="kpi-value" id="kpiConv">${kpiLeads>0?Math.round((kpiClosed/kpiLeads)*100):'0'}%</div>
+        <div class="kpi-delta up">↑ +12% this month</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header"><div class="kpi-label">Policies Closed</div><div class="kpi-icon" style="background:#FEF9C3">🏆</div></div>
+        <div class="kpi-value" id="kpiClosed">${kpiClosed}</div>
+        <div class="kpi-delta up">↑ +3 this week</div>
+      </div>
+    </div>
+    <div class="panel-grid-2">
+      <div class="panel">
+        <div class="panel-header">
+          <div><div class="panel-title">🔀 Insurance Pipeline</div><div class="panel-sub">Live funnel · updated in real time</div></div>
+          <button class="btn btn-outline btn-sm" onclick="switchView('leads')">View All</button>
+        </div>
+        <div class="funnel-stages">
+          <div class="funnel-stage active"><div class="funnel-stage-label">📥 New Leads</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:100%;background:#3B82F6"></div></div><div class="funnel-count">${funnelData[0]}</div><div class="funnel-pct">100%</div></div>
+          <div class="funnel-stage"><div class="funnel-stage-label">✉️ Contacted</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.round(funnelData[1]/funnelData[0]*100)}%;background:#8B5CF6"></div></div><div class="funnel-count">${funnelData[1]}</div><div class="funnel-pct">${Math.round(funnelData[1]/funnelData[0]*100)}%</div></div>
+          <div class="funnel-stage"><div class="funnel-stage-label">💬 Engaged</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.round(funnelData[2]/funnelData[0]*100)}%;background:#F59E0B"></div></div><div class="funnel-count">${funnelData[2]}</div><div class="funnel-pct">${Math.round(funnelData[2]/funnelData[0]*100)}%</div></div>
+          <div class="funnel-stage"><div class="funnel-stage-label">📅 Quoted</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.round(funnelData[3]/funnelData[0]*100)}%;background:#06B6D4"></div></div><div class="funnel-count">${funnelData[3]}</div><div class="funnel-pct">${Math.round(funnelData[3]/funnelData[0]*100)}%</div></div>
+          <div class="funnel-stage"><div class="funnel-stage-label">✅ Closed / Won</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.round(funnelData[4]/funnelData[0]*100)}%;background:#10B981"></div></div><div class="funnel-count">${funnelData[4]}</div><div class="funnel-pct">${Math.round(funnelData[4]/funnelData[0]*100)}%</div></div>
+        </div>
+        <div class="metrics-row">
+          <div class="metric-mini"><div class="mm-val">7</div><div class="mm-label">Recovered Leads</div></div>
+          <div class="metric-mini"><div class="mm-val">14</div><div class="mm-label">Renewals Pending</div></div>
+          <div class="metric-mini"><div class="mm-val">$42K</div><div class="mm-label">Pipeline Value</div></div>
+        </div>
+        <div style="margin-top:1rem;display:flex;gap:8px">
+          <button class="btn btn-gold btn-sm" onclick="openAiModal()">⚡ Process New Lead</button>
+          <button class="btn btn-primary btn-sm" onclick="runDashboardSim(this)">🤖 Run AI Simulation</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div><div class="panel-title">⚡ Live Activity Feed</div><div class="panel-sub">AI automation events</div></div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:0.72rem;color:#10B981;font-weight:600"><span class="pulse-dot"></span> Live</div>
+        </div>
+        <div id="activityFeed" style="max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+    </div>
+    <div class="panel-grid-2">
+      <div class="panel">
+        <div class="panel-header">
+          <div><div class="panel-title">🔁 Follow-Up Automation</div><div class="panel-sub">AI-triggered sequences</div></div>
+          <button class="btn btn-outline btn-sm" onclick="switchView('followup')">Manage</button>
+        </div>
+        <div id="dashFollowup">
+          ${[{day:'Day 1 — Immediate',msg:'SMS + Email: "Hi [Name], your quote is ready!"',done:true},{day:'Day 3 — Check-In',msg:'Personalized SMS: "Still exploring options?"',done:true},{day:'Day 7 — Value Push',msg:'Email: "Why 840 families chose us this year"',done:false},{day:'Day 14 — Recovery',msg:'AI Re-engagement: discount trigger + callback',done:false}].map((f,i)=>`
+          <div class="ft-item">
+            <div class="ft-dot ${f.done?'done':''}">${f.done?'✓':(i+1)}</div>
+            <div class="ft-content">
+              <div class="ft-day">${f.day}</div>
+              <div class="ft-msg">${f.msg}</div>
+              <div class="ft-status ${f.done ? 'sent' : ''}">
+  ${f.done ? '✓ Sent · Delivered' : 'Scheduled'}
+</div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div><div class="panel-title">🏆 Agent Leaderboard</div><div class="panel-sub">This month · ranked by conversions</div></div>
+          <button class="btn btn-outline btn-sm" onclick="switchView('agents')">Full Report</button>
+        </div>
+        <div class="lb-list">
+          ${AGENTS.map((a,i)=>`
+          <div class="lb-item">
+            <div class="lb-rank">${i+1}</div>
+            <div style="flex:1">
+              <div class="lb-name">${a.name}</div>
+              <div class="lb-type">${a.type}</div>
+              <div class="lb-score-bar"><div class="lb-score-fill" style="width:${a.score}%"></div></div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:0.85rem;font-weight:700;color:var(--navy)">${a.closed}</div>
+              <div style="font-size:0.68rem;color:var(--slate)">Closed</div>
+              <div style="font-size:0.72rem;color:#10B981;font-weight:600">${a.rate}</div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <div><div class="panel-title">👥 Recent Leads</div><div class="panel-sub">All active leads · AI-assigned</div></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-gold btn-sm" onclick="openAiModal()">⚡ Process New Lead</button>
+          <button class="btn btn-outline btn-sm" onclick="switchView('leads')">View All Leads →</button>
+        </div>
+      </div>
+      <div class="lead-table-wrap">
+        <table class="lead-table">
+          <thead><tr><th>Lead</th><th>Insurance Type</th><th>Status</th><th>Lead Score</th><th>Assigned Agent</th><th>Last Contact</th></tr></thead>
+          <tbody>
+            ${LEADS_DATA.slice(0,6).map(l=>`
+            <tr class="${l.highlight?'highlight':''}" onclick="switchView('leads')">
+              <td><div class="lead-name">${l.name}</div><div class="lead-phone">${l.phone}</div></td>
+              <td>${insBadge(l.type)}</td>
+              <td>${statusBadge(l.status)}</td>
+              <td><div class="score-wrap"><span class="score-num">${l.score}</span><div class="score-bar"><div class="score-fill ${scoreClass(l.score)}" style="width:${l.score}%"></div></div></div></td>
+              <td><div class="agent-cell"><div class="agent-av" style="background:${l.agentColor}">${l.agent.split(' ').map(x=>x[0]).join('')}</div>${l.agent}</div></td>
+              <td class="time-cell">${l.time}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function initDashboard() {
+  ACTIVITY_POOL.slice(0,5).forEach((a,i) => {
+    setTimeout(() => addActivityItem(a), i*300);
+  });
+}
+
+function runDashboardSim(btn) {
+  btn.disabled = true;
+  btn.textContent = '🤖 Simulating...';
+  let idx = 5;
+  function next() {
+    if (idx >= ACTIVITY_POOL.length) {
+      btn.disabled = false;
+      btn.textContent = '🤖 Run AI Simulation';
+      showToast('Simulation complete!', 'All AI engines processed successfully', 'success');
+      return;
+    }
+    addActivityItem(ACTIVITY_POOL[idx]);
+    idx++;
+    setTimeout(next, rand(600,1200));
+  }
+  next();
+}
+
+function addActivityItem(item) {
+  const feed = document.getElementById('activityFeed');
+  if (!feed) return;
+  const div = document.createElement('div');
+  div.className = `activity-item type-${item.type}`;
+  div.innerHTML = `
+    <span class="activity-icon">${item.icon}</span>
+    <div class="activity-body">
+      <div class="activity-text">${item.text}</div>
+      <div class="activity-time">${now()}</div>
+    </div>
+    <span class="activity-tag" style="${item.tagStyle}">${item.tag}</span>`;
+  feed.insertBefore(div, feed.firstChild);
+  if (feed.children.length > 12) feed.lastChild.remove();
+}
+
+/* ════════ LEADS MODULE ════════ */
+function leadsUI() {
+  return `
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-gold" onclick="openAiModal()">⚡ Process New Lead</button>
+      <button class="btn btn-primary" onclick="runAiClassify()">🧠 AI Classify All</button>
+      <button class="btn btn-outline" onclick="filterLeads('new')">Filter: New</button>
+      <button class="btn btn-outline" onclick="filterLeads('nonresp')">Filter: Non-Responsive</button>
+      <button class="btn btn-outline" onclick="filterLeads('all')">Show All</button>
+      <div style="margin-left:auto;font-size:0.82rem;color:var(--slate)">${LEADS_DATA.length} leads total</div>
+    </div>
+    <!-- FIX 1: display:none prevents empty box showing before any lead is clicked -->
+    <div class="panel" style="margin-bottom:1rem;display:none" id="leadDetailContainer"></div>
+    <div class="panel">
+      <div class="panel-header">
+        <div><div class="panel-title">👥 All Leads</div><div class="panel-sub">Click a lead to view details and actions</div></div>
+      </div>
+      <div class="lead-table-wrap">
+        <table class="lead-table" id="mainLeadTable">
+          <thead><tr><th>Lead</th><th>Insurance Type</th><th>Status</th><th>Lead Score</th><th>Assigned Agent</th><th>Last Contact</th><th>Actions</th></tr></thead>
+          <tbody id="mainLeadBody">${renderLeadRows(LEADS_DATA)}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function renderLeadRows(data) {
+  return data.map(l => `
+    <tr class="${l.highlight?'highlight':''}" onclick="showLeadDetail(${l.id})">
+      <td><div class="lead-name">${l.name}</div><div class="lead-phone">${l.phone}</div></td>
+      <td>${insBadge(l.type)}</td>
+      <td>${statusBadge(l.status)}</td>
+      <td><div class="score-wrap"><span class="score-num">${l.score}</span><div class="score-bar"><div class="score-fill ${scoreClass(l.score)}" style="width:${l.score}%"></div></div></div></td>
+      <td><div class="agent-cell"><div class="agent-av" style="background:${l.agentColor}">${l.agent.split(' ').map(x=>x[0]).join('')}</div>${l.agent}</div></td>
+      <td class="time-cell">${l.time}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-primary btn-sm" style="margin-right:4px" onclick="event.stopPropagation();sendSMS('${l.name}')">📲 SMS</button>
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showLeadDetail(${l.id})">View</button>
+      </td>
+    </tr>`).join('');
+}
+
+let activeLeadId = null;
+function showLeadDetail(id) {
+  const l = LEADS_DATA.find(x=>x.id===id);
+  if (!l) return;
+  activeLeadId = id;
+  const c = document.getElementById('leadDetailContainer');
+  c.style.display = 'block';
+  const aiResponses = {
+    Auto: `"Hi ${l.name.split(' ')[0]}! I saw you're interested in auto insurance. Based on your profile, I can offer you a comprehensive plan starting at $89/month with zero deductible. Want me to send over a full quote? I'm available for a quick 10-minute call today."`,
+    Health: `"Hi ${l.name.split(' ')[0]}, thanks for reaching out! I specialize in health coverage and can get you a tailored plan. Most of my clients in your situation save 23% vs their current premiums. Can we hop on a quick call?"`,
+    Life: `"Hi ${l.name.split(' ')[0]}, I understand you're exploring life insurance options. I can show you a term life plan starting at $22/month that covers $500K. Would you like a no-obligation quote today?"`,
+    Home: `"Hello ${l.name.split(' ')[0]}! Great timing — I have bundled home + auto packages that can save you up to $600/year. I'd love to review your current coverage and see where we can improve it."`,
+    Medicare: `"Hi ${l.name.split(' ')[0]}, navigating Medicare can be confusing but I'm here to help. I can walk you through Part A, B, and supplemental options in just 15 minutes. When's a good time to talk?"`
+  };
+  c.innerHTML = `
+    <div class="lead-detail-panel">
+      <div class="ldp-header">
+        <div>
+          <div class="ldp-name">${l.name}</div>
+          <div class="ldp-meta">${l.phone} · ${l.type} Insurance · Score: <strong>${l.score}</strong></div>
+          <div style="margin-top:6px">${statusBadge(l.status)} ${insBadge(l.type)}</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('leadDetailContainer').style.display='none'">✕ Close</button>
+      </div>
+      <div class="ldp-actions">
+        <button class="btn btn-gold" onclick="sendSMS('${l.name}')">📲 Send SMS</button>
+        <button class="btn btn-primary" onclick="sendEmail('${l.name}')">📧 Send Email</button>
+        <button class="btn btn-outline" onclick="classifyLead('${l.name}',${l.score},'${l.type}')">🧠 AI Classify</button>
+        <button class="btn btn-outline" onclick="reassignAgent('${l.name}')">👤 Reassign Agent</button>
+        <button class="btn btn-danger btn-sm" onclick="markLost(${l.id})">Mark Lost</button>
+      </div>
+      <div class="ldp-section">
+        <div class="ldp-section-title">🤖 AI-Generated Response Preview</div>
+        <div class="ldp-ai-response">${aiResponses[l.type]||aiResponses.Auto}</div>
+      </div>
+      <div class="ldp-section">
+        <div class="ldp-section-title">📋 Lead Timeline</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:0.8rem">
+          <div style="padding:8px;background:var(--gray-50);border-radius:8px">📥 Lead captured via web form · ${l.time}</div>
+          <div style="padding:8px;background:var(--gray-50);border-radius:8px">🧠 AI classified as ${l.type} · Score: ${l.score} · ${l.time}</div>
+          <div style="padding:8px;background:#F0FDF4;border-radius:8px;color:#166534">📲 Instant SMS sent in 2.3s · "Your quote is ready!"</div>
+          <div style="padding:8px;background:#F0FDF4;border-radius:8px;color:#166534">👤 Routed to ${l.agent} (best-fit match)</div>
+        </div>
+      </div>
+    </div>`;
+  c.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function filterLeads(filter) {
+  let data = filter === 'all' ? LEADS_DATA : LEADS_DATA.filter(l=>l.status===filter);
+  document.getElementById('mainLeadBody').innerHTML = renderLeadRows(data);
+  showToast('Filter applied', `Showing ${data.length} leads`, 'info');
+}
+
+function runAiClassify() {
+  showToast('🧠 AI Classifying...', 'Scoring all leads in pipeline', 'info');
+  setTimeout(() => showToast('Classification complete', 'All leads scored and sorted by intent', 'success'), 2200);
+}
+
+function sendSMS(name) { showToast('📲 SMS Sent!', `Message delivered to ${name} instantly`, 'success'); }
+function sendEmail(name) { showToast('📧 Email Sent!', `Quote email delivered to ${name}`, 'success'); }
+function classifyLead(name, score, type) { showToast('🧠 Lead Classified', `${name} → ${type} Insurance · Score: ${score} · High Intent`, 'info'); }
+function reassignAgent(name) {
+  const agents = AGENTS.map(a=>a.name);
+  showToast('👤 Agent Reassigned', `${name} routed to ${agents[rand(0,agents.length-1)]}`, 'success');
+}
+function markLost(id) {
+  const l = LEADS_DATA.find(x=>x.id===id);
+  if (l) { l.status='lost'; document.getElementById('mainLeadBody').innerHTML = renderLeadRows(LEADS_DATA); }
+  document.getElementById('leadDetailContainer').style.display='none';
+  showToast('Lead marked lost', 'Added to recovery queue automatically', 'warn');
+}
+
+/* ════════ LOST LEAD RECOVERY ════════ */
+let lostSimRunning = false;
+function lostLeadUI() {
+  return `
+    <div class="insight-alert">
+      <div class="insight-icon">💸</div>
+      <div class="insight-text">
+        <strong>8 Lost Leads Detected</strong>
+        Your AI recovery engine can reactivate these leads automatically. Average recovery rate: 31% within 48 hours.
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:1rem">
+      <button class="btn btn-gold" onclick="runRecoveryEngine()">🚀 Run Recovery Engine</button>
+      <button class="btn btn-outline" onclick="showToast('Export ready','Lost leads exported to CSV','success')">📤 Export List</button>
+    </div>
+    <div id="recoveryList">
+      ${LOST_LEADS.map((l,i)=>`
+      <div class="recovery-card" id="rc_${i}">
+        <div class="recovery-av" style="background:${l.color}">${l.name.split(' ').map(x=>x[0]).join('')}</div>
+        <div class="recovery-info">
+          <div class="recovery-name">${l.name}</div>
+          <div class="recovery-meta">${l.phone} · ${l.type} Insurance · ${l.days} day${l.days>1?'s':''} inactive</div>
+          <div class="recovery-meta" style="margin-top:2px">Reason: ${l.reason}</div>
+          <div class="recovery-status idle" id="rcs_${i}">Awaiting recovery engine...</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="btn btn-primary btn-sm" onclick="reviveLead(${i},'${l.name}')">⚡ Revive</button>
+          <button class="btn btn-outline btn-sm" onclick="sendSMS('${l.name}')">📲 SMS</button>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="panel" style="margin-top:1rem">
+      <div class="panel-title" style="margin-bottom:0.8rem">📊 Recovery Engine Log</div>
+      <div class="sim-log" id="recoveryLog">
+        <div class="log-line">[System ready] Recovery engine standing by — click "Run Recovery Engine" to begin</div>
+      </div>
+    </div>`;
+}
+
+function reviveLead(i, name) {
+  const status = document.getElementById(`rcs_${i}`);
+  const card = document.getElementById(`rc_${i}`);
+  status.className = 'recovery-status scanning';
+  status.textContent = '🔄 Scanning lead profile...';
+  const steps = [
+    [600, 'scanning', '🧠 AI analyzing last touchpoint...'],
+    [1400, 'scanning', '📲 Sending personalized SMS...'],
+    [2200, 'scanning', '📧 Sending re-engagement email...'],
+    [3000, 'done', '✅ Lead reactivated! Follow-up sequence started'],
+  ];
+  steps.forEach(([delay, cls, text]) => {
+    setTimeout(()=>{
+      status.className = `recovery-status ${cls}`;
+      status.textContent = text;
+      if (cls === 'done') {
+        card.classList.add('revived');
+        showToast('Lead Revived!', `${name} re-engaged and returned to pipeline`, 'success');
+      }
+    }, delay);
+  });
+}
+
+function runRecoveryEngine() {
+  if (lostSimRunning) return;
+  lostSimRunning = true;
+  const logLines = [
+    [0, 'info', '🚀 Recovery engine activated — scanning 8 inactive leads...'],
+    [800, 'ai', '🧠 AI analyzing behavior patterns and drop-off reasons...'],
+    [1600, 'info', '📋 Generating personalized re-engagement scripts per lead...'],
+    [2400, 'success', '📲 SMS batch sent: 8 messages delivered (avg 1.8s each)'],
+    [3200, 'success', '📧 Email sequence activated: 8 emails queued and sending...'],
+    [4000, 'warn', '⚠️  Ray Hoang — 3-day silence detected → escalating to Priya Singh'],
+    [4800, 'success', '✅ Alan Mercer responded to SMS — moving back to "Contacted"'],
+    [5600, 'ai', '🧠 AI offer generator: creating discount triggers for price-sensitive leads...'],
+    [6400, 'success', '📞 Agent reassignment complete — Carlos Vega → TJ Brooks'],
+    [7200, 'success', '✅ 3 leads reactivated · 5 in follow-up queue · $18K pipeline recovered'],
+  ];
+  logLines.forEach(([delay, type, text]) => {
+    setTimeout(()=>addLog('recoveryLog', text, type), delay);
+  });
+  LOST_LEADS.forEach((_,i) => {
+    setTimeout(()=>{
+      const status = document.getElementById(`rcs_${i}`);
+      const card = document.getElementById(`rc_${i}`);
+      if (status) {
+        status.className = 'recovery-status scanning';
+        status.textContent = '🔄 Processing...';
+        setTimeout(()=>{
+          if (status) {
+            const revived = rand(0,1);
+            status.className = `recovery-status ${revived?'done':'idle'}`;
+            status.textContent = revived ? '✅ Reactivated — back in pipeline' : '📋 In follow-up queue';
+            if (revived && card) card.classList.add('revived');
+          }
+        }, 2000 + rand(0,2000));
+      }
+    }, i*700);
+  });
+  setTimeout(()=>{ lostSimRunning=false; showToast('Recovery complete!', '3 leads reactivated · $18K pipeline recovered', 'success'); }, 8000);
+}
+
+/* ════════ LEAD LEAKAGE ════════ */
+function leakageUI() {
+  return `
+    <div class="insight-alert">
+      <div class="insight-icon">🚨</div>
+      <div class="insight-text">
+        <strong>Critical: 38% of leads are lost due to slow response time</strong>
+        Industry data shows leads that aren't contacted in the first 5 minutes are 21× less likely to convert.
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:1rem">
+      <button class="btn btn-gold" onclick="analyzeLeakage()">🔍 Analyze Leakage</button>
+      <button class="btn btn-outline" onclick="showToast('Report sent','Leakage report emailed to jordan@abovetherest.com','success')">📊 Email Report</button>
+    </div>
+    <div class="panel-grid-2" style="margin-bottom:1rem">
+      <div class="panel">
+        <div class="panel-header"><div><div class="panel-title">📉 Leakage Breakdown</div><div class="panel-sub">Where leads are lost in your pipeline</div></div></div>
+        <div id="leakageBars">
+          ${[
+            {label:'Slow first response (>5 min)',pct:38,color:'#EF4444'},
+            {label:'No follow-up after quote',pct:24,color:'#F59E0B'},
+            {label:'Missed calls unreturned',pct:19,color:'#8B5CF6'},
+            {label:'Email bounce / unread',pct:12,color:'#0EA5E9'},
+            {label:'Agent capacity overflow',pct:7,color:'#10B981'},
+          ].map(b=>`
+          <div class="leakage-bar-item">
+            <div class="leakage-label">${b.label}</div>
+            <div class="leakage-bar-wrap"><div class="leakage-bar-fill" style="width:0%;background:${b.color}" data-target="${b.pct}"></div></div>
+            <div class="leakage-pct" style="color:${b.color}">${b.pct}%</div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div><div class="panel-title">💰 Revenue Lost to Leakage</div><div class="panel-sub">Estimated this month</div></div></div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:0.5rem">
+          ${[
+            {label:'Leads lost to slow response',value:'$31,400',color:'#EF4444'},
+            {label:'Lost to no follow-up',value:'$19,800',color:'#F59E0B'},
+            {label:'Missed call revenue loss',value:'$15,600',color:'#8B5CF6'},
+            {label:'Email non-engagement',value:'$9,200',color:'#0EA5E9'},
+          ].map(r=>`
+          <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200)">
+            <span style="font-size:0.8rem;color:var(--charcoal)">${r.label}</span>
+            <span style="font-size:0.88rem;font-weight:800;color:${r.color}">${r.value}</span>
+          </div>`).join('')}
+          <div style="display:flex;justify-content:space-between;padding:12px;background:var(--navy);border-radius:8px">
+            <span style="font-size:0.85rem;color:rgba(255,255,255,0.8);font-weight:600">Total Estimated Loss</span>
+            <span style="font-size:1rem;font-weight:800;color:var(--gold)">$76,000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div><div class="panel-title">🛡️ AI Fixes Applied</div><div class="panel-sub">Automated interventions preventing leakage</div></div></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        ${[
+          {icon:'⚡', title:'Instant Response', desc:'AI responds to all new leads in under 4 seconds', active:true},
+          {icon:'🔁', title:'Auto Follow-Up', desc:'4-step sequence triggers automatically on no-reply', active:true},
+          {icon:'📞', title:'Missed Call SMS', desc:'SMS sent within 60 seconds of any missed call', active:true},
+          {icon:'🧠', title:'Smart Routing', desc:'Leads matched to best-fit agent by type & score', active:true},
+          {icon:'📅', title:'Auto Scheduling', desc:'AI books appointments when intent score >70', active:false},
+          {icon:'📊', title:'Leakage Alerts', desc:'Real-time warnings when leads go 2+ hours silent', active:true},
+        ].map(f=>`
+        <div style="padding:1rem;border-radius:10px;background:${f.active?'#F0FDF4':'var(--gray-50)'};border:1px solid ${f.active?'#86EFAC':'var(--gray-200)'}">
+          <div style="font-size:1.5rem;margin-bottom:6px">${f.icon}</div>
+          <div style="font-size:0.85rem;font-weight:700;color:var(--charcoal);margin-bottom:4px">${f.title}</div>
+          <div style="font-size:0.75rem;color:var(--slate)">${f.desc}</div>
+          <div style="margin-top:8px;font-size:0.72rem;font-weight:700;color:${f.active?'#166534':'var(--slate)'}">${f.active?'✓ ACTIVE':'○ Inactive'}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function analyzeLeakage() {
+  showToast('🔍 Analyzing...', 'AI scanning pipeline for leakage points', 'info');
+  document.querySelectorAll('.leakage-bar-fill').forEach(bar => {
+    const target = bar.getAttribute('data-target');
+    setTimeout(()=>{ bar.style.width = target + '%'; }, 200);
+  });
+  setTimeout(()=>showToast('Analysis complete', 'Report ready — $76K leakage identified this month', 'warn'), 2000);
+}
+
+/* ════════ MISSED CALL RECOVERY ════════ */
+function missedCallUI() {
+  return `
+    <div class="insight-alert">
+      <div class="insight-icon">📞</div>
+      <div class="insight-text">
+        <strong>4 Missed Calls Detected Today</strong>
+        The AI has already sent SMS recovery messages. Click "Run Recovery System" to escalate unresponsive leads.
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:1rem">
+      <button class="btn btn-gold" onclick="runMissedCallRecovery()">📞 Run Recovery System</button>
+      <button class="btn btn-outline" onclick="showToast('Call log exported','Missed calls report downloaded','success')">📤 Export Call Log</button>
+    </div>
+    <div id="missedCallList">
+      ${MISSED_CALLS.map((c,i)=>`
+      <div class="recovery-card" id="mrc_${i}">
+        <div style="width:42px;height:42px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">📞</div>
+        <div class="recovery-info">
+          <div class="recovery-name">${c.name}</div>
+          <div class="recovery-meta">${c.phone} · ${c.type} Insurance</div>
+          <div class="recovery-meta">Missed call at ${c.time} · Assigned to ${c.agent}</div>
+          <div class="recovery-status idle" id="mcs_${i}">SMS sent automatically · awaiting response</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="btn btn-primary btn-sm" onclick="escalateMissed(${i},'${c.name}')">🔼 Escalate</button>
+          <button class="btn btn-outline btn-sm" onclick="sendSMS('${c.name}')">📲 Resend SMS</button>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="panel" style="margin-top:1rem">
+      <div class="panel-title" style="margin-bottom:0.8rem">📡 Recovery Log</div>
+      <div class="sim-log" id="missedLog">
+        <div class="log-line">[Auto] SMS recovery messages sent to all 4 missed calls within 60 seconds</div>
+      </div>
+    </div>`;
+}
+
+function escalateMissed(i, name) {
+  const status = document.getElementById(`mcs_${i}`);
+  const card = document.getElementById(`mrc_${i}`);
+  const steps = [
+    [0, 'scanning', '🔄 Escalating to senior agent...'],
+    [900, 'scanning', '📧 Sending priority email...'],
+    [1800, 'done', '✅ Agent called back · Lead revived'],
+  ];
+  steps.forEach(([d,cls,text])=>{ setTimeout(()=>{ if(status){status.className=`recovery-status ${cls}`;status.textContent=text;if(cls==='done'){card.classList.add('revived');showToast('Lead Revived!',`${name} answered callback — in pipeline`,'success');}}}, d); });
+}
+
+function runMissedCallRecovery() {
+  const lines = [
+    [0,'info','🚀 Missed call recovery system activated...'],
+    [700,'ai','🧠 AI matching each caller to best available agent...'],
+    [1400,'success','📲 Priority SMS batch: 4 messages with callback links sent'],
+    [2100,'success','📧 Voicemail-to-email transcriptions sent to agents'],
+    [2800,'warn','⚠️  James Parker — 2nd missed call — escalating to owner line'],
+    [3500,'success','✅ Omar Diaz responded to SMS — call scheduled for 3:00 PM'],
+    [4200,'success','👤 Lena Foster → reassigned to Carlos M. (Health specialist)'],
+    [4900,'success','✅ Recovery complete: 2/4 leads reactivated · 2 in follow-up'],
+  ];
+  lines.forEach(([d,t,txt])=>setTimeout(()=>addLog('missedLog',txt,t), d));
+  MISSED_CALLS.forEach((_,i)=>{
+    setTimeout(()=>{
+      const s = document.getElementById(`mcs_${i}`);
+      const c = document.getElementById(`mrc_${i}`);
+      if(s){
+        s.className='recovery-status scanning';
+        s.textContent='🔄 Recovering...';
+        setTimeout(()=>{
+          if(s){
+            const ok=rand(0,1);
+            s.className=`recovery-status ${ok?'done':'idle'}`;
+            s.textContent=ok?'✅ Call returned · Lead active':'📋 Follow-up SMS scheduled';
+            if(ok&&c)c.classList.add('revived');
+          }
+        },2000+rand(0,1500));
+      }
+    }, i*600);
+  });
+  showToast('Recovery system running...', 'Processing 4 missed calls', 'info');
+  setTimeout(()=>showToast('Recovery complete!', '2 leads reactivated from missed calls', 'success'), 5500);
+}
+
+/* ════════ FOLLOW-UP QUEUE ════════ */
+function followUpUI() {
+  const leads = [
+    {name:'Marcus Webb', type:'Auto', day:1, status:'Immediate — SMS & Email due', score:92, color:'#4F46E5'},
+    {name:'Nadia Ruiz', type:'Life', day:1, status:'Immediate — SMS & Email due', score:88, color:'#059669'},
+    {name:'Derek Osei', type:'Life', day:3, status:'Check-in SMS due', score:65, color:'#4F46E5'},
+    {name:'Sharon Pace', type:'Home', day:7, status:'Value email due', score:54, color:'#059669'},
+    {name:'Ray Hoang', type:'Medicare', day:14, status:'Recovery sequence due', score:41, color:'#0891B2'},
+  ];
+  return `
+    <div style="display:flex;gap:10px;margin-bottom:1rem">
+      <button class="btn btn-gold" onclick="triggerFollowupEngine()">🔁 Trigger Follow-up Engine</button>
+      <button class="btn btn-outline" onclick="showToast('Queue exported','Follow-up queue sent to agents','success')">📤 Export Queue</button>
+    </div>
+    <div class="panel-grid-2" style="margin-bottom:1rem">
+      ${['Day 1 — Immediate','Day 3 — Check-In','Day 7 — Value Push','Day 14 — Recovery'].map((label,idx)=>{
+        const dayLeads = leads.filter(l=>l.day===[1,3,7,14][idx]);
+        const colors = ['#3B82F6','#F59E0B','#8B5CF6','#EF4444'];
+        return `<div class="panel">
+          <div class="panel-header">
+            <div><div class="panel-title" style="color:${colors[idx]}">${label}</div><div class="panel-sub">${dayLeads.length} lead${dayLeads.length!==1?'s':''} in this stage</div></div>
+            <button class="btn btn-outline btn-sm" onclick="triggerStage(${[1,3,7,14][idx]})">▶ Trigger</button>
+          </div>
+          ${dayLeads.length ? dayLeads.map(l=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--gray-50);border-radius:8px;margin-bottom:6px;border:1px solid var(--gray-200)" id="fq_${l.name.replace(/ /g,'_')}">
+            <div class="agent-av" style="background:${l.color};width:36px;height:36px">${l.name.split(' ').map(x=>x[0]).join('')}</div>
+            <div style="flex:1">
+              <div style="font-size:0.82rem;font-weight:600;color:var(--charcoal)">${l.name}</div>
+              <div style="font-size:0.72rem;color:var(--slate)">${l.type} · Score: ${l.score}</div>
+              <div style="font-size:0.72rem;color:${colors[idx]};font-weight:600;margin-top:2px" id="fqs_${l.name.replace(/ /g,'_')}">${l.status}</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="sendFollowup('${l.name}','${l.type}',${[1,3,7,14][idx]})">Send</button>
+          </div>`).join('') : `<div style="text-align:center;padding:20px;color:var(--slate);font-size:0.82rem">No leads in this stage</div>`}
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="panel">
+      <div class="panel-title" style="margin-bottom:0.8rem">⚡ Automation Engine Log</div>
+      <div class="sim-log" id="followupLog">
+        <div class="log-line">[System] Follow-up engine ready — 5 leads queued across 4 stages</div>
+      </div>
+    </div>`;
+}
+
+/* FIX 3: use regex replace (/ /g,'_') so ALL spaces are replaced, not just the first */
+function sendFollowup(name, type, day) {
+  const key = name.replace(/ /g,'_');
+  const s = document.getElementById(`fqs_${key}`);
+  if(s){ s.textContent='📲 Sending...'; setTimeout(()=>{ s.textContent='✅ Sent · Delivered'; s.style.color='#10B981'; showToast('Follow-up sent!',`Day ${day} message delivered to ${name}`,'success'); }, 1200); }
+}
+
+function triggerStage(day) {
+  const names = {1:['Marcus Webb','Nadia Ruiz'],3:['Derek Osei'],7:['Sharon Pace'],14:['Ray Hoang']};
+  const leads = names[day]||[];
+  leads.forEach(n=>sendFollowup(n,'',day));
+}
+
+function triggerFollowupEngine() {
+  const lines = [
+    [0,'info','🔁 Follow-up engine triggered for all 5 queued leads...'],
+    [700,'ai','🧠 AI personalizing messages based on lead profile and behavior...'],
+    [1400,'success','📲 Day 1 SMS sent: Marcus Webb, Nadia Ruiz'],
+    [2100,'success','📧 Day 1 Email sent: Marcus Webb, Nadia Ruiz'],
+    [2800,'success','📲 Day 3 SMS sent: Derek Osei — "Still exploring options?"'],
+    [3500,'success','📧 Day 7 Email sent: Sharon Pace — value story campaign'],
+    [4200,'warn','⚡ Day 14 Recovery: Ray Hoang — discount trigger + callback scheduled'],
+    [4900,'success','✅ All 5 follow-ups dispatched · Next batch in 24 hours'],
+  ];
+  lines.forEach(([d,t,txt])=>setTimeout(()=>addLog('followupLog',txt,t), d));
+  ['Marcus Webb','Nadia Ruiz'].forEach(n=>{ const s=document.getElementById(`fqs_${n.replace(/ /g,'_')}`); if(s){setTimeout(()=>{s.textContent='✅ Sent · Delivered';s.style.color='#10B981';},2000);} });
+  setTimeout(()=>showToast('Follow-up engine done!', 'All 5 sequences triggered successfully', 'success'), 5500);
+}
+
+/* ════════ AGENT PERFORMANCE ════════ */
+function agentUI() {
+  return `
+    <div class="kpi-grid" style="margin-bottom:1.2rem">
+      <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Total Agents</div><div class="kpi-icon" style="background:#DBEAFE">👥</div></div><div class="kpi-value">4</div><div class="kpi-delta up">All active</div></div>
+      <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Avg Conversion</div><div class="kpi-icon" style="background:#DCFCE7">🎯</div></div><div class="kpi-value">64%</div><div class="kpi-delta up">↑ +8% MoM</div></div>
+      <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Policies Closed</div><div class="kpi-icon" style="background:#FEF9C3">🏆</div></div><div class="kpi-value">54</div><div class="kpi-delta up">This month</div></div>
+      <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Total Revenue</div><div class="kpi-icon" style="background:#F3E8FF">💰</div></div><div class="kpi-value">$230K</div><div class="kpi-delta up">↑ +18% YTD</div></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:1rem">
+      <button class="btn btn-gold" onclick="refreshLeaderboard()">🔄 Refresh Rankings</button>
+      <button class="btn btn-outline" onclick="showToast('Report ready','Agent performance PDF sent to jordan@abovetherest.com','success')">📊 Export Report</button>
+    </div>
+    <div id="agentCards">
+      ${renderAgentCards()}
+    </div>`;
+}
+
+function renderAgentCards() {
+  return AGENTS.map((a,i) => `
+    <div class="agent-perf-card" style="${i===0?'border-color:var(--gold)':''}">
+      <div class="agent-perf-header">
+        <div class="agent-perf-av" style="background:${a.color}">${a.initials}</div>
+        <div style="flex:1">
+          <div style="font-size:0.95rem;font-weight:800;color:var(--charcoal)">${a.name} ${i===0?'<span style="font-size:0.75rem;color:var(--gold);font-weight:700">👑 #1</span>':''}</div>
+          <div style="font-size:0.75rem;color:var(--slate)">${a.type}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:1.2rem;font-weight:800;color:var(--navy)">${a.score}</div>
+          <div style="font-size:0.68rem;color:var(--slate)">Performance Score</div>
+        </div>
+      </div>
+      <div class="agent-stat-grid">
+        <div class="agent-stat"><div class="as-val">${a.closed}</div><div class="as-label">Policies Closed</div></div>
+        <div class="agent-stat"><div class="as-val">${a.rate}</div><div class="as-label">Conversion Rate</div></div>
+        <div class="agent-stat"><div class="as-val">${a.resp}</div><div class="as-label">Avg Response</div></div>
+        <div class="agent-stat"><div class="as-val" style="color:#10B981">${a.revenue}</div><div class="as-label">Revenue Gen.</div></div>
+      </div>
+      <div style="margin-top:12px;background:var(--gray-200);border-radius:5px;height:6px;overflow:hidden">
+        <div style="height:100%;background:linear-gradient(90deg,${a.color},${a.color}99);width:${a.score}%;border-radius:5px;transition:width 1s ease"></div>
+      </div>
+    </div>`).join('');
+}
+
+/* FIX 2: refreshLeaderboard — replaced broken regex+outerHTML approach with clean innerHTML on the existing element */
+function refreshLeaderboard() {
+  AGENTS.forEach((a) => {
+    a.closed = Math.max(0, a.closed + rand(0,2));
+    a.score = Math.min(100, Math.max(40, a.score + rand(-3,5)));
+  });
+  AGENTS.sort((a,b) => b.score - a.score);
+  const container = document.getElementById('agentCards');
+  if (!container) return;
+  container.innerHTML = renderAgentCards();
+  showToast('Rankings updated!', `${AGENTS[0].name} holds #1 with score ${AGENTS[0].score}`, 'success');
+}
+
+/* ════════ AI MODAL ════════ */
+function openAiModal() {
+  const names = ['Taylor Morris','Kim Brandt','Devon Walsh','Sandra Obi','Miguel Santos'];
+  const types = ['Auto Insurance','Health Coverage','Life Insurance','Home Bundle','Medicare Plan'];
+  const rn = names[rand(0,names.length-1)];
+  const rt = types[rand(0,types.length-1)];
+  const rs = rand(60,98);
+  document.getElementById('modalLeadInfo').innerHTML = `<strong style="color:var(--navy)">${rn}</strong> — ${rt}<br><span style="font-size:0.72rem">Source: Facebook Lead Ad · Predicted Score: <strong>${rs}</strong> · Urgency: High</span>`;
+  document.getElementById('aiModal').classList.add('open');
+  document.getElementById('modalCloseBtn').style.display = 'none';
+  const steps = document.querySelectorAll('.modal-step');
+  steps.forEach(s => { s.className='modal-step'; s.querySelector('.step-check').textContent=''; });
+  let i = 0;
+  function doStep() {
+    if (i>0){ steps[i-1].classList.remove('active'); steps[i-1].classList.add('done'); steps[i-1].querySelector('.step-check').textContent='✓'; }
+    if (i>=steps.length){
+      document.getElementById('modalCloseBtn').style.display='block';
+      LEADS_DATA.unshift({id:Date.now(),name:rn,phone:'(555) 000-0000',type:rt.split(' ')[0],status:'new',score:rs,agent:'Priya S.',agentColor:'#4F46E5',time:'Just now',highlight:true});
+      kpiLeads++;
+      document.getElementById('leadBadge').textContent=LEADS_DATA.filter(l=>l.status==='new').length;
+      showToast('Lead processed!',`${rn} — ${rt}`,'success');
+      return;
+    }
+    steps[i].classList.add('active');
+    steps[i].querySelector('.step-check').innerHTML='<span style="animation:spin 0.8s linear infinite;display:inline-block">⟳</span>';
+    i++;
+    setTimeout(doStep, rand(450,700));
+  }
+  doStep();
+}
+
+function closeAiModal(){ document.getElementById('aiModal').classList.remove('open'); }
+document.getElementById('aiModal').addEventListener('click', function(e){ if(e.target===this)closeAiModal(); });
+
+/* ════════ BOOT ════════ */
+function startDemo() {
+  const landing = document.getElementById('landing');
+  landing.style.opacity='0';
+  setTimeout(()=>{
+    landing.style.display='none';
+    document.getElementById('app').classList.add('visible');
+    setInterval(()=>{ const el=document.getElementById('liveTime'); if(el)el.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }, 1000);
+    document.getElementById('liveTime').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    render();
+    let idx=0;
+    setInterval(()=>{ addActivityItem(ACTIVITY_POOL[idx%ACTIVITY_POOL.length]); idx++; }, 4500);
+  }, 700);
+}
+</script>
+</body>
+</html>
