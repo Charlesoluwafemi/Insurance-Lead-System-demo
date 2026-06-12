@@ -382,11 +382,15 @@
     --sidebar-width: 0px;
   }
 
-  .sidebar{
+.sidebar{
     position: fixed;
-    left: -240px;
+    left: 0;
     transition: left .3s ease;
-  }
+}
+
+.sidebar.closed{
+    left: -240px;
+}
 
   .sidebar.open{
     left: 0;
@@ -482,6 +486,19 @@
 }
 .lead-table{
     min-width: 900px;
+}
+@media (max-width: 768px) {
+
+  .sidebar{
+      position: fixed;
+      left: -240px;   /* hidden by default */
+      transition: left .3s ease;
+  }
+
+  .sidebar.open{
+      left: 0;        /* visible */
+  }
+
 }
 </style>
 </head>
@@ -667,18 +684,42 @@ function addLog(containerId, text, type='') {
 
 /* ════════ ROUTING ════════ */
 function switchView(view) {
+
   currentView = view;
+
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.remove('active');
-    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${view}'`)) {
+    if (
+      item.getAttribute('onclick') &&
+      item.getAttribute('onclick').includes(`'${view}'`)
+    ) {
       item.classList.add('active');
     }
-  });
-  const titles = { dashboard:'Dashboard', leads:'Leads', lost:'Lost Lead Recovery', leakage:'Lead Leakage Tracker', missed:'Missed Call Recovery', followup:'Follow-Up Queue', agents:'Agent Performance' };
-  document.getElementById('topbarTitle').textContent = titles[view] || view;
-  render();
+    if (window.innerWidth <= 768) {
+    document.querySelector(".sidebar").classList.remove("open");
 }
+  });
 
+  const titles = {
+    dashboard:'Dashboard',
+    leads:'Leads',
+    lost:'Lost Lead Recovery',
+    leakage:'Lead Leakage Tracker',
+    missed:'Missed Call Recovery',
+    followup:'Follow-Up Queue',
+    agents:'Agent Performance'
+  };
+
+  document.getElementById('topbarTitle').textContent =
+    titles[view] || view;
+
+  render();
+
+  // Mobile: hide sidebar after navigation
+  if (window.innerWidth <= 768) {
+      document.querySelector('.sidebar').classList.add('closed');
+  }
+}
 function render() {
   const area = document.getElementById('contentArea');
 
@@ -1437,11 +1478,23 @@ function startDemo() {
     setInterval(()=>{ addActivityItem(ACTIVITY_POOL[idx%ACTIVITY_POOL.length]); idx++; }, 4500);
   }, 700);
 }
+const menuBtn = document.getElementById("menuBtn");
+const sidebar = document.querySelector(".sidebar");
+
+menuBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("closed");
+});
 document.addEventListener("DOMContentLoaded", () => {
     const btn = document.getElementById("menuBtn");
     const sidebar = document.querySelector(".sidebar");
 
     if (btn && sidebar) {
+
+        // Show sidebar initially on mobile
+        if (window.innerWidth <= 768) {
+            sidebar.classList.add("open");
+        }
+
         btn.addEventListener("click", () => {
             sidebar.classList.toggle("open");
         });
