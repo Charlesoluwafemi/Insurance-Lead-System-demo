@@ -83,12 +83,18 @@
   #app { display: none; min-height: 100vh; }
   #app.visible { display: flex; }
 
-  /* SIDEBAR */
+  /* SIDEBAR — desktop default */
   .sidebar {
-    width: var(--sidebar-width); background: var(--navy);
-    display: flex; flex-direction: column;
-    position: fixed; top: 0; left: 0; height: 100vh;
-    z-index: 100; box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+    width: var(--sidebar-width);
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    z-index: 200;
+    box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+    transition: left 0.3s ease;
   }
   .sidebar-logo { padding: 1.6rem 1.4rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
   .sidebar-logo .logo-name { font-size: 1.05rem; font-weight: 800; color: #fff; letter-spacing: -0.01em; line-height: 1.2; }
@@ -118,8 +124,13 @@
   .signout-btn { width: 100%; padding: 9px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); border-radius: var(--radius-sm); font-size: 0.8rem; cursor: pointer; transition: background 0.15s, color 0.15s; text-align: center; }
   .signout-btn:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.8); }
 
-  /* MAIN CONTENT */
-  .main-content { margin-left: var(--sidebar-width); flex: 1; overflow-y: auto; min-height: 100vh; }
+  /* MAIN CONTENT — desktop */
+  .main-content {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    overflow-y: auto;
+    min-height: 100vh;
+  }
   .topbar {
     background: var(--white); border-bottom: 1px solid var(--gray-200);
     padding: 1rem 2rem; display: flex; align-items: center;
@@ -131,6 +142,20 @@
   .topbar-right { display: flex; align-items: center; gap: 12px; }
   .sim-status { display: flex; align-items: center; gap: 6px; background: #DCFCE7; color: #166534; font-size: 0.78rem; font-weight: 600; padding: 6px 12px; border-radius: 50px; }
   .content-area { padding: 1.6rem 2rem 3rem; }
+
+  /* Hamburger — hidden on desktop, shown on mobile */
+  #menuBtn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--charcoal);
+    padding: 4px 8px;
+    border-radius: 6px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
 
   /* KPI CARDS */
   .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.4rem; }
@@ -185,7 +210,7 @@
 
   /* LEAD TABLE */
   .lead-table-wrap { overflow-x: auto; }
-  table.lead-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  table.lead-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 900px; }
   .lead-table th { text-align: left; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate); padding: 9px 12px; border-bottom: 1px solid var(--gray-200); background: var(--gray-50); }
   .lead-table td { padding: 11px 12px; border-bottom: 1px solid var(--gray-200); vertical-align: middle; }
   .lead-table tr:last-child td { border-bottom: none; }
@@ -276,17 +301,6 @@
   .sim-log .log-line.log-info { color: #60A5FA; }
   .sim-log .log-line.log-ai { color: #C084FC; }
 
-  /* STEP INDICATOR */
-  .step-indicator { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--gray-50); border: 1px solid var(--gray-200); margin-bottom: 6px; transition: all 0.4s; opacity: 0.4; }
-  .step-indicator.active { opacity: 1; border-color: var(--gold); background: #FFFBEB; }
-  .step-indicator.done { opacity: 1; border-color: #10B981; background: #F0FDF4; }
-  .step-ind-icon { font-size: 1rem; }
-  .step-ind-text { font-size: 0.82rem; font-weight: 500; flex: 1; }
-  .step-ind-status { font-size: 0.75rem; font-weight: 600; }
-  .step-ind-status.spinning { color: var(--gold); animation: spin 0.8s linear infinite; }
-  .step-ind-status.done { color: #10B981; }
-  @keyframes spin { to{transform:rotate(360deg)} }
-
   /* LEAD DETAIL PANEL */
   .lead-detail-panel { background: var(--white); border-radius: var(--radius); padding: 1.6rem; box-shadow: var(--shadow-lg); border: 1px solid var(--gray-200); animation: slideIn 0.3s ease; margin-top: 1rem; }
   .ldp-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.2rem; }
@@ -318,7 +332,6 @@
 
   /* AGENT PERF */
   .agent-perf-card { background: var(--white); border-radius: var(--radius); padding: 1.4rem; box-shadow: var(--shadow); border: 1px solid var(--gray-200); margin-bottom: 10px; transition: all 0.3s; }
-  .agent-perf-card:first-child { border-color: var(--gold); }
   .agent-perf-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
   .agent-perf-av { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; color: #fff; flex-shrink: 0; }
   .agent-stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
@@ -369,126 +382,101 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
 
+  /* ─── DESKTOP RESPONSIVE (1100px breakpoint, no sidebar changes) ─── */
   @media (max-width: 1100px) {
     .kpi-grid { grid-template-columns: repeat(2,1fr); }
     .panel-grid-2, .panel-grid-3 { grid-template-columns: 1fr; }
     .agent-stat-grid { grid-template-columns: repeat(2,1fr); }
   }
 
-  /* Tablets */
-@media (max-width: 768px) {
+  /* ─── MOBILE (768px and below) ─── */
+  /*
+   * Core mobile layout strategy:
+   *   - Sidebar slides in/out via left: 0 / left: -240px
+   *   - main-content has no left margin and starts hidden
+   *   - main-content becomes visible only after a nav item is tapped
+   *   - hamburger #menuBtn is shown so users can reopen the sidebar
+   */
+  @media (max-width: 768px) {
 
-  :root{
-    --sidebar-width: 0px;
+    /* Show hamburger button */
+    #menuBtn {
+      display: inline-flex;
+    }
+
+    /* Sidebar: always fixed, starts visible (left: 0), slides out to left: -240px when closed */
+    .sidebar {
+      left: 0;
+      /* no changes needed to default .sidebar positioning — it's already fixed at left:0 */
+    }
+
+    /* .sidebar-hidden is the only class we toggle on mobile */
+    .sidebar.sidebar-hidden {
+      left: -240px;
+    }
+
+    /* Main content: full width, no left margin */
+    .main-content {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    /* Main content starts hidden on mobile — JS reveals it after first nav tap */
+    .main-content.content-hidden {
+      display: none;
+    }
+
+    /* Topbar adjustments */
+    .topbar {
+      padding: 0.75rem 1rem;
+      gap: 10px;
+    }
+
+    .topbar-left {
+      flex: 1;
+    }
+
+    .topbar-left h2 { font-size: 1rem; }
+
+    /* Content area padding */
+    .content-area { padding: 1rem; }
+
+    /* KPI grid: 2 columns on tablet */
+    .kpi-grid { grid-template-columns: repeat(2,1fr); }
+
+    .panel-grid-2,
+    .panel-grid-3 { grid-template-columns: 1fr; }
+
+    .metrics-row { grid-template-columns: repeat(3,1fr); }
+
+    .agent-stat-grid { grid-template-columns: repeat(2,1fr); }
+
+    .landing-stats { gap: 1rem; }
+
+    .ldp-header { flex-direction: column; gap: 1rem; }
+    .ldp-actions { flex-wrap: wrap; }
   }
 
-.sidebar{
-    position: fixed;
-    left: 0;
-    transition: left .3s ease;
-}
+  /* ─── SMALL PHONES (480px and below) ─── */
+  @media (max-width: 480px) {
+    html { font-size: 13px; }
 
-.sidebar.closed{
-    left: -240px;
-}
+    .topbar-left h2 { font-size: 0.95rem; }
+    .kpi-value { font-size: 1.6rem; }
+    .kpi-grid { grid-template-columns: 1fr; }
 
-  .sidebar.open{
-    left: 0;
+    .btn { width: 100%; justify-content: center; }
+
+    .landing-stats { flex-direction: column; }
+
+    .agent-stat-grid { grid-template-columns: 1fr; }
+
+    .modal-card { padding: 1rem; }
+
+    #landing h1 { font-size: 2rem; }
+
+    .metrics-row { grid-template-columns: 1fr; }
   }
-
-  .main-content{
-    margin-left: 0;
-    width: 100%;
-    display: block;
-  }
-
-  .topbar{
-    padding: 1rem;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .content-area{
-    padding: 1rem;
-  }
-
-  .kpi-grid{
-    grid-template-columns: 1fr;
-  }
-
-  .panel-grid-2,
-  .panel-grid-3{
-    grid-template-columns: 1fr;
-  }
-
-  .metrics-row{
-    grid-template-columns: 1fr;
-  }
-
-  .agent-stat-grid{
-    grid-template-columns: repeat(2,1fr);
-  }
-
-  .landing-stats{
-    gap: 1rem;
-  }
-
-  .ldp-header{
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .ldp-actions{
-    flex-wrap: wrap;
-  }
-}
-
-/* Small phones */
-@media (max-width: 480px) {
-
-  html{
-    font-size: 13px;
-  }
-
-  .topbar-left h2{
-    font-size: 1rem;
-  }
-
-  .kpi-value{
-    font-size: 1.6rem;
-  }
-
-  .btn{
-    width: 100%;
-    justify-content: center;
-  }
-
-  .lead-table{
-    min-width: 700px;
-  }
-
-  .landing h1,
-  #landing h1{
-    font-size: 2rem;
-  }
-
-  .landing-stats{
-    flex-direction: column;
-  }
-
-  .agent-stat-grid{
-    grid-template-columns: 1fr;
-  }
-
-  .modal-card{
-    padding: 1rem;
-  }
-}
-.lead-table{
-    min-width: 900px;
-}
-
 </style>
 </head>
 <body>
@@ -509,8 +497,9 @@
 
 <!-- APP SHELL -->
 <div id="app">
+
   <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <div class="shield-icon">🛡️</div>
       <div class="logo-name">Above The Rest</div>
@@ -538,10 +527,11 @@
     </div>
   </aside>
 
-  <!-- MAIN -->
-  <div class="main-content">
+  <!-- MAIN CONTENT -->
+  <div class="main-content content-hidden" id="mainContent">
     <div class="topbar">
-    <button id="menuBtn">☰</button>
+      <!-- Hamburger: always in topbar, only visible on mobile via CSS -->
+      <button id="menuBtn" aria-label="Open navigation menu">☰</button>
       <div class="topbar-left">
         <h2 id="topbarTitle">Dashboard</h2>
         <p>Welcome back, Admin · <span id="liveTime"></span></p>
@@ -552,6 +542,7 @@
     </div>
     <div class="content-area" id="contentArea"></div>
   </div>
+
 </div>
 
 <!-- AI PROCESSING MODAL -->
@@ -576,13 +567,63 @@
 <div id="toastContainer"></div>
 
 <script>
-/* ════════ STATE ════════ */
+/* ════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════ */
 let currentView = 'dashboard';
 let kpiLeads = 24, kpiClosed = 7;
-let simStarted = false;
+let lostSimRunning = false;
 let funnelData = [24, 19, 13, 8, 5];
 
-/* ════════ DATA ════════ */
+/* ════════════════════════════════════════════════════
+   MOBILE SIDEBAR MANAGEMENT
+   Single source of truth: sidebar uses .sidebar-hidden class.
+   mainContent uses .content-hidden class.
+   isMobile() determines which mode is active.
+════════════════════════════════════════════════════ */
+function isMobile() {
+  return window.innerWidth <= 768;
+}
+
+function openSidebar() {
+  document.getElementById('sidebar').classList.remove('sidebar-hidden');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.add('sidebar-hidden');
+}
+
+function showMainContent() {
+  document.getElementById('mainContent').classList.remove('content-hidden');
+}
+
+// Hamburger button toggles sidebar visibility on mobile
+document.getElementById('menuBtn').addEventListener('click', function () {
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar.classList.contains('sidebar-hidden')) {
+    openSidebar();
+  } else {
+    closeSidebar();
+  }
+});
+
+// Close sidebar when tapping outside it on mobile
+document.addEventListener('click', function (e) {
+  if (!isMobile()) return;
+  const sidebar = document.getElementById('sidebar');
+  const menuBtn = document.getElementById('menuBtn');
+  if (
+    !sidebar.contains(e.target) &&
+    e.target !== menuBtn &&
+    !sidebar.classList.contains('sidebar-hidden')
+  ) {
+    closeSidebar();
+  }
+});
+
+/* ════════════════════════════════════════════════════
+   DATA
+════════════════════════════════════════════════════ */
 const LEADS_DATA = [
   { id:1, name:'Marcus Webb', phone:'(555) 201-4432', type:'Auto', status:'new', score:92, agent:'Priya S.', agentColor:'#4F46E5', time:'2 min ago', highlight:true },
   { id:2, name:'Linda Torres', phone:'(555) 309-7761', type:'Health', status:'responded', score:78, agent:'Carlos M.', agentColor:'#0891B2', time:'14 min ago', highlight:false },
@@ -636,7 +677,9 @@ const ACTIVITY_POOL = [
   { type:'won', icon:'📅', text:'<strong>Appointment booked:</strong> Linda Torres — Health plan demo for tomorrow', tag:'BOOKED', tagStyle:'background:#ECFDF5;color:#065F46' },
 ];
 
-/* ════════ HELPERS ════════ */
+/* ════════════════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════════════════ */
 function statusBadge(s) {
   const map = { new:'badge-new', unopened:'badge-unopened', opened:'badge-opened', responded:'badge-responded', nonresp:'badge-nonresp', contacted:'badge-contacted', won:'badge-won', lost:'badge-lost' };
   const labels = { new:'New', unopened:'Unopened', opened:'Opened', responded:'Responded', nonresp:'Non-Responsive', contacted:'Contacted', won:'Won', lost:'Lost' };
@@ -671,47 +714,44 @@ function addLog(containerId, text, type='') {
   el.scrollTop = el.scrollHeight;
 }
 
-/* ════════ ROUTING ════════ */
+/* ════════════════════════════════════════════════════
+   ROUTING — switchView, render
+════════════════════════════════════════════════════ */
 function switchView(view) {
-
   currentView = view;
 
+  // Update active nav item
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.remove('active');
-
-    if (
-      item.getAttribute('onclick') &&
-      item.getAttribute('onclick').includes(`'${view}'`)
-    ) {
+    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${view}'`)) {
       item.classList.add('active');
     }
   });
 
+  // Update topbar title
   const titles = {
-    dashboard:'Dashboard',
-    leads:'Leads',
-    lost:'Lost Lead Recovery',
-    leakage:'Lead Leakage Tracker',
-    missed:'Missed Call Recovery',
-    followup:'Follow-Up Queue',
-    agents:'Agent Performance'
+    dashboard: 'Dashboard',
+    leads: 'Leads',
+    lost: 'Lost Lead Recovery',
+    leakage: 'Lead Leakage Tracker',
+    missed: 'Missed Call Recovery',
+    followup: 'Follow-Up Queue',
+    agents: 'Agent Performance'
   };
+  document.getElementById('topbarTitle').textContent = titles[view] || view;
 
-  document.getElementById('topbarTitle').textContent =
-    titles[view] || view;
-
+  // Render the selected view
   render();
 
-  // Mobile: hide sidebar after navigation
-  if (window.innerWidth <= 768) {
-
-    document.querySelector('.main-content').style.display = 'block';
-
-    document.querySelector('.sidebar').classList.add('closed');
+  // On mobile: show main content and close sidebar
+  if (isMobile()) {
+    showMainContent();
+    closeSidebar();
+  }
 }
+
 function render() {
   const area = document.getElementById('contentArea');
-
   const views = {
     dashboard: dashboardUI,
     leads: leadsUI,
@@ -721,36 +761,61 @@ function render() {
     followup: followUpUI,
     agents: agentUI
   };
-
-  const viewFn = views[currentView] || dashboardUI;
-
-  area.innerHTML = viewFn();
-
-  if (currentView === 'dashboard' && typeof initDashboard === "function") {
+  area.innerHTML = (views[currentView] || dashboardUI)();
+  if (currentView === 'dashboard') {
     initDashboard();
   }
 }
 
+/* ════════════════════════════════════════════════════
+   BOOT — startDemo
+   Single definition. Handles both desktop and mobile.
+════════════════════════════════════════════════════ */
 function startDemo() {
+  const landing = document.getElementById('landing');
+  landing.style.opacity = '0';
 
-    document.getElementById('landing').style.display = 'none';
+  setTimeout(() => {
+    landing.style.display = 'none';
+    document.getElementById('app').classList.add('visible');
 
-    if (window.innerWidth <= 768) {
+    // Start live clock
+    setInterval(() => {
+      const el = document.getElementById('liveTime');
+      if (el) el.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    }, 1000);
+    const el = document.getElementById('liveTime');
+    if (el) el.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 
-        // Show navigation first
-        document.querySelector('.sidebar').classList.remove('closed');
-
-        // Hide dashboard area
-        document.querySelector('.main-content').style.display = 'none';
-
+    if (isMobile()) {
+      /*
+       * MOBILE: show the sidebar first; main content stays hidden.
+       * The user picks a nav item, which triggers switchView(),
+       * which calls showMainContent() and closeSidebar().
+       */
+      openSidebar();
+      // mainContent already has .content-hidden from HTML — leave it hidden
     } else {
-
-        // Desktop behavior unchanged
-        currentView = 'dashboard';
-        render();
+      /*
+       * DESKTOP: show main content immediately, sidebar is always visible.
+       */
+      showMainContent();
+      currentView = 'dashboard';
+      render();
     }
+
+    // Start the activity feed ticker (works regardless of view)
+    let idx = 0;
+    setInterval(() => {
+      addActivityItem(ACTIVITY_POOL[idx % ACTIVITY_POOL.length]);
+      idx++;
+    }, 4500);
+  }, 700);
 }
-/* ════════ DASHBOARD ════════ */
+
+/* ════════════════════════════════════════════════════
+   DASHBOARD
+════════════════════════════════════════════════════ */
 function dashboardUI() {
   return `
     <div class="insight-alert">
@@ -800,7 +865,7 @@ function dashboardUI() {
           <div class="metric-mini"><div class="mm-val">14</div><div class="mm-label">Renewals Pending</div></div>
           <div class="metric-mini"><div class="mm-val">$42K</div><div class="mm-label">Pipeline Value</div></div>
         </div>
-        <div style="margin-top:1rem;display:flex;gap:8px">
+        <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-gold btn-sm" onclick="openAiModal()">⚡ Process New Lead</button>
           <button class="btn btn-primary btn-sm" onclick="runDashboardSim(this)">🤖 Run AI Simulation</button>
         </div>
@@ -819,19 +884,20 @@ function dashboardUI() {
           <div><div class="panel-title">🔁 Follow-Up Automation</div><div class="panel-sub">AI-triggered sequences</div></div>
           <button class="btn btn-outline btn-sm" onclick="switchView('followup')">Manage</button>
         </div>
-        <div id="dashFollowup">
-          ${[{day:'Day 1 — Immediate',msg:'SMS + Email: "Hi [Name], your quote is ready!"',done:true},{day:'Day 3 — Check-In',msg:'Personalized SMS: "Still exploring options?"',done:true},{day:'Day 7 — Value Push',msg:'Email: "Why 840 families chose us this year"',done:false},{day:'Day 14 — Recovery',msg:'AI Re-engagement: discount trigger + callback',done:false}].map((f,i)=>`
+        ${[
+          {day:'Day 1 — Immediate', msg:'SMS + Email: "Hi [Name], your quote is ready!"', done:true},
+          {day:'Day 3 — Check-In', msg:'Personalized SMS: "Still exploring options?"', done:true},
+          {day:'Day 7 — Value Push', msg:'Email: "Why 840 families chose us this year"', done:false},
+          {day:'Day 14 — Recovery', msg:'AI Re-engagement: discount trigger + callback', done:false}
+        ].map((f,i)=>`
           <div class="ft-item">
             <div class="ft-dot ${f.done?'done':''}">${f.done?'✓':(i+1)}</div>
             <div class="ft-content">
               <div class="ft-day">${f.day}</div>
               <div class="ft-msg">${f.msg}</div>
-              <div class="ft-status ${f.done ? 'sent' : ''}">
-  ${f.done ? '✓ Sent · Delivered' : 'Scheduled'}
-</div>
+              <div class="ft-status ${f.done?'sent':''}">${f.done?'✓ Sent · Delivered':'Scheduled'}</div>
             </div>
           </div>`).join('')}
-        </div>
       </div>
       <div class="panel">
         <div class="panel-header">
@@ -859,7 +925,7 @@ function dashboardUI() {
     <div class="panel">
       <div class="panel-header">
         <div><div class="panel-title">👥 Recent Leads</div><div class="panel-sub">All active leads · AI-assigned</div></div>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-gold btn-sm" onclick="openAiModal()">⚡ Process New Lead</button>
           <button class="btn btn-outline btn-sm" onclick="switchView('leads')">View All Leads →</button>
         </div>
@@ -885,7 +951,7 @@ function dashboardUI() {
 
 function initDashboard() {
   ACTIVITY_POOL.slice(0,5).forEach((a,i) => {
-    setTimeout(() => addActivityItem(a), i*300);
+    setTimeout(() => addActivityItem(a), i * 300);
   });
 }
 
@@ -923,7 +989,9 @@ function addActivityItem(item) {
   if (feed.children.length > 12) feed.lastChild.remove();
 }
 
-/* ════════ LEADS MODULE ════════ */
+/* ════════════════════════════════════════════════════
+   LEADS MODULE
+════════════════════════════════════════════════════ */
 function leadsUI() {
   return `
     <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
@@ -934,7 +1002,6 @@ function leadsUI() {
       <button class="btn btn-outline" onclick="filterLeads('all')">Show All</button>
       <div style="margin-left:auto;font-size:0.82rem;color:var(--slate)">${LEADS_DATA.length} leads total</div>
     </div>
-    <!-- FIX 1: display:none prevents empty box showing before any lead is clicked -->
     <div class="panel" style="margin-bottom:1rem;display:none" id="leadDetailContainer"></div>
     <div class="panel">
       <div class="panel-header">
@@ -1010,7 +1077,7 @@ function showLeadDetail(id) {
         </div>
       </div>
     </div>`;
-  c.scrollIntoView({behavior:'smooth',block:'nearest'});
+  c.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function filterLeads(filter) {
@@ -1038,8 +1105,9 @@ function markLost(id) {
   showToast('Lead marked lost', 'Added to recovery queue automatically', 'warn');
 }
 
-/* ════════ LOST LEAD RECOVERY ════════ */
-let lostSimRunning = false;
+/* ════════════════════════════════════════════════════
+   LOST LEAD RECOVERY
+════════════════════════════════════════════════════ */
 function lostLeadUI() {
   return `
     <div class="insight-alert">
@@ -1049,7 +1117,7 @@ function lostLeadUI() {
         Your AI recovery engine can reactivate these leads automatically. Average recovery rate: 31% within 48 hours.
       </div>
     </div>
-    <div style="display:flex;gap:10px;margin-bottom:1rem">
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
       <button class="btn btn-gold" onclick="runRecoveryEngine()">🚀 Run Recovery Engine</button>
       <button class="btn btn-outline" onclick="showToast('Export ready','Lost leads exported to CSV','success')">📤 Export List</button>
     </div>
@@ -1090,12 +1158,8 @@ function reviveLead(i, name) {
   ];
   steps.forEach(([delay, cls, text]) => {
     setTimeout(()=>{
-      status.className = `recovery-status ${cls}`;
-      status.textContent = text;
-      if (cls === 'done') {
-        card.classList.add('revived');
-        showToast('Lead Revived!', `${name} re-engaged and returned to pipeline`, 'success');
-      }
+      if (status) { status.className = `recovery-status ${cls}`; status.textContent = text; }
+      if (cls === 'done' && card) { card.classList.add('revived'); showToast('Lead Revived!', `${name} re-engaged and returned to pipeline`, 'success'); }
     }, delay);
   });
 }
@@ -1139,7 +1203,9 @@ function runRecoveryEngine() {
   setTimeout(()=>{ lostSimRunning=false; showToast('Recovery complete!', '3 leads reactivated · $18K pipeline recovered', 'success'); }, 8000);
 }
 
-/* ════════ LEAD LEAKAGE ════════ */
+/* ════════════════════════════════════════════════════
+   LEAD LEAKAGE
+════════════════════════════════════════════════════ */
 function leakageUI() {
   return `
     <div class="insight-alert">
@@ -1149,7 +1215,7 @@ function leakageUI() {
         Industry data shows leads that aren't contacted in the first 5 minutes are 21× less likely to convert.
       </div>
     </div>
-    <div style="display:flex;gap:10px;margin-bottom:1rem">
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
       <button class="btn btn-gold" onclick="analyzeLeakage()">🔍 Analyze Leakage</button>
       <button class="btn btn-outline" onclick="showToast('Report sent','Leakage report emailed to jordan@abovetherest.com','success')">📊 Email Report</button>
     </div>
@@ -1221,7 +1287,9 @@ function analyzeLeakage() {
   setTimeout(()=>showToast('Analysis complete', 'Report ready — $76K leakage identified this month', 'warn'), 2000);
 }
 
-/* ════════ MISSED CALL RECOVERY ════════ */
+/* ════════════════════════════════════════════════════
+   MISSED CALL RECOVERY
+════════════════════════════════════════════════════ */
 function missedCallUI() {
   return `
     <div class="insight-alert">
@@ -1231,7 +1299,7 @@ function missedCallUI() {
         The AI has already sent SMS recovery messages. Click "Run Recovery System" to escalate unresponsive leads.
       </div>
     </div>
-    <div style="display:flex;gap:10px;margin-bottom:1rem">
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
       <button class="btn btn-gold" onclick="runMissedCallRecovery()">📞 Run Recovery System</button>
       <button class="btn btn-outline" onclick="showToast('Call log exported','Missed calls report downloaded','success')">📤 Export Call Log</button>
     </div>
@@ -1267,7 +1335,12 @@ function escalateMissed(i, name) {
     [900, 'scanning', '📧 Sending priority email...'],
     [1800, 'done', '✅ Agent called back · Lead revived'],
   ];
-  steps.forEach(([d,cls,text])=>{ setTimeout(()=>{ if(status){status.className=`recovery-status ${cls}`;status.textContent=text;if(cls==='done'){card.classList.add('revived');showToast('Lead Revived!',`${name} answered callback — in pipeline`,'success');}}}, d); });
+  steps.forEach(([d,cls,text])=>{
+    setTimeout(()=>{
+      if (status) { status.className=`recovery-status ${cls}`; status.textContent=text; }
+      if (cls==='done' && card) { card.classList.add('revived'); showToast('Lead Revived!',`${name} answered callback — in pipeline`,'success'); }
+    }, d);
+  });
 }
 
 function runMissedCallRecovery() {
@@ -1304,7 +1377,9 @@ function runMissedCallRecovery() {
   setTimeout(()=>showToast('Recovery complete!', '2 leads reactivated from missed calls', 'success'), 5500);
 }
 
-/* ════════ FOLLOW-UP QUEUE ════════ */
+/* ════════════════════════════════════════════════════
+   FOLLOW-UP QUEUE
+════════════════════════════════════════════════════ */
 function followUpUI() {
   const leads = [
     {name:'Marcus Webb', type:'Auto', day:1, status:'Immediate — SMS & Email due', score:92, color:'#4F46E5'},
@@ -1314,7 +1389,7 @@ function followUpUI() {
     {name:'Ray Hoang', type:'Medicare', day:14, status:'Recovery sequence due', score:41, color:'#0891B2'},
   ];
   return `
-    <div style="display:flex;gap:10px;margin-bottom:1rem">
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
       <button class="btn btn-gold" onclick="triggerFollowupEngine()">🔁 Trigger Follow-up Engine</button>
       <button class="btn btn-outline" onclick="showToast('Queue exported','Follow-up queue sent to agents','success')">📤 Export Queue</button>
     </div>
@@ -1348,7 +1423,6 @@ function followUpUI() {
     </div>`;
 }
 
-/* FIX 3: use regex replace (/ /g,'_') so ALL spaces are replaced, not just the first */
 function sendFollowup(name, type, day) {
   const key = name.replace(/ /g,'_');
   const s = document.getElementById(`fqs_${key}`);
@@ -1373,11 +1447,16 @@ function triggerFollowupEngine() {
     [4900,'success','✅ All 5 follow-ups dispatched · Next batch in 24 hours'],
   ];
   lines.forEach(([d,t,txt])=>setTimeout(()=>addLog('followupLog',txt,t), d));
-  ['Marcus Webb','Nadia Ruiz'].forEach(n=>{ const s=document.getElementById(`fqs_${n.replace(/ /g,'_')}`); if(s){setTimeout(()=>{s.textContent='✅ Sent · Delivered';s.style.color='#10B981';},2000);} });
+  ['Marcus Webb','Nadia Ruiz'].forEach(n=>{
+    const s=document.getElementById(`fqs_${n.replace(/ /g,'_')}`);
+    if(s){setTimeout(()=>{s.textContent='✅ Sent · Delivered';s.style.color='#10B981';},2000);}
+  });
   setTimeout(()=>showToast('Follow-up engine done!', 'All 5 sequences triggered successfully', 'success'), 5500);
 }
 
-/* ════════ AGENT PERFORMANCE ════════ */
+/* ════════════════════════════════════════════════════
+   AGENT PERFORMANCE
+════════════════════════════════════════════════════ */
 function agentUI() {
   return `
     <div class="kpi-grid" style="margin-bottom:1.2rem">
@@ -1386,18 +1465,16 @@ function agentUI() {
       <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Policies Closed</div><div class="kpi-icon" style="background:#FEF9C3">🏆</div></div><div class="kpi-value">54</div><div class="kpi-delta up">This month</div></div>
       <div class="kpi-card"><div class="kpi-header"><div class="kpi-label">Total Revenue</div><div class="kpi-icon" style="background:#F3E8FF">💰</div></div><div class="kpi-value">$230K</div><div class="kpi-delta up">↑ +18% YTD</div></div>
     </div>
-    <div style="display:flex;gap:10px;margin-bottom:1rem">
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
       <button class="btn btn-gold" onclick="refreshLeaderboard()">🔄 Refresh Rankings</button>
       <button class="btn btn-outline" onclick="showToast('Report ready','Agent performance PDF sent to jordan@abovetherest.com','success')">📊 Export Report</button>
     </div>
-    <div id="agentCards">
-      ${renderAgentCards()}
-    </div>`;
+    <div id="agentCards">${renderAgentCards()}</div>`;
 }
 
 function renderAgentCards() {
   return AGENTS.map((a,i) => `
-    <div class="agent-perf-card" style="${i===0?'border-color:var(--gold)':''}">
+    <div class="agent-perf-card" ${i===0?'style="border-color:var(--gold)"':''}>
       <div class="agent-perf-header">
         <div class="agent-perf-av" style="background:${a.color}">${a.initials}</div>
         <div style="flex:1">
@@ -1421,20 +1498,20 @@ function renderAgentCards() {
     </div>`).join('');
 }
 
-/* FIX 2: refreshLeaderboard — replaced broken regex+outerHTML approach with clean innerHTML on the existing element */
 function refreshLeaderboard() {
-  AGENTS.forEach((a) => {
+  AGENTS.forEach(a => {
     a.closed = Math.max(0, a.closed + rand(0,2));
     a.score = Math.min(100, Math.max(40, a.score + rand(-3,5)));
   });
   AGENTS.sort((a,b) => b.score - a.score);
   const container = document.getElementById('agentCards');
-  if (!container) return;
-  container.innerHTML = renderAgentCards();
+  if (container) container.innerHTML = renderAgentCards();
   showToast('Rankings updated!', `${AGENTS[0].name} holds #1 with score ${AGENTS[0].score}`, 'success');
 }
 
-/* ════════ AI MODAL ════════ */
+/* ════════════════════════════════════════════════════
+   AI MODAL
+════════════════════════════════════════════════════ */
 function openAiModal() {
   const names = ['Taylor Morris','Kim Brandt','Devon Walsh','Sandra Obi','Miguel Santos'];
   const types = ['Auto Insurance','Health Coverage','Life Insurance','Home Bundle','Medicare Plan'];
@@ -1465,41 +1542,8 @@ function openAiModal() {
   doStep();
 }
 
-function closeAiModal(){ document.getElementById('aiModal').classList.remove('open'); }
+function closeAiModal() { document.getElementById('aiModal').classList.remove('open'); }
 document.getElementById('aiModal').addEventListener('click', function(e){ if(e.target===this)closeAiModal(); });
-
-/* ════════ BOOT ════════ */
-function startDemo() {
-  const landing = document.getElementById('landing');
-  landing.style.opacity='0';
-  setTimeout(()=>{
-    landing.style.display='none';
-    document.getElementById('app').classList.add('visible');
-    setInterval(()=>{ const el=document.getElementById('liveTime'); if(el)el.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }, 1000);
-    document.getElementById('liveTime').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    render();
-    let idx=0;
-    setInterval(()=>{ addActivityItem(ACTIVITY_POOL[idx%ACTIVITY_POOL.length]); idx++; }, 4500);
-  }, 700);
-}
-const menuBtn = document.getElementById("menuBtn");
-const sidebar = document.querySelector(".sidebar");
-
-menuBtn.addEventListener("click", () => {
-    sidebar.classList.toggle("closed");
-});
-document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("menuBtn");
-    const sidebar = document.querySelector(".sidebar");
-
-    if (btn && sidebar) {
-
-        btn.addEventListener("click", () => {
-            sidebar.classList.toggle("closed");
-        });
-
-    }
-});
 </script>
 </body>
 </html>
