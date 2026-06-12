@@ -399,6 +399,7 @@
   .main-content{
     margin-left: 0;
     width: 100%;
+    display: block;
   }
 
   .topbar{
@@ -487,19 +488,7 @@
 .lead-table{
     min-width: 900px;
 }
-@media (max-width: 768px) {
 
-  .sidebar{
-      position: fixed;
-      left: -240px;   /* hidden by default */
-      transition: left .3s ease;
-  }
-
-  .sidebar.open{
-      left: 0;        /* visible */
-  }
-
-}
 </style>
 </head>
 <body>
@@ -689,15 +678,13 @@ function switchView(view) {
 
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.remove('active');
+
     if (
       item.getAttribute('onclick') &&
       item.getAttribute('onclick').includes(`'${view}'`)
     ) {
       item.classList.add('active');
     }
-    if (window.innerWidth <= 768) {
-    document.querySelector(".sidebar").classList.remove("open");
-}
   });
 
   const titles = {
@@ -717,8 +704,10 @@ function switchView(view) {
 
   // Mobile: hide sidebar after navigation
   if (window.innerWidth <= 768) {
-      document.querySelector('.sidebar').classList.add('closed');
-  }
+
+    document.querySelector('.main-content').style.display = 'block';
+
+    document.querySelector('.sidebar').classList.add('closed');
 }
 function render() {
   const area = document.getElementById('contentArea');
@@ -743,8 +732,23 @@ function render() {
 }
 
 function startDemo() {
-  currentView = "dashboard";
-  render();
+
+    document.getElementById('landing').style.display = 'none';
+
+    if (window.innerWidth <= 768) {
+
+        // Show navigation first
+        document.querySelector('.sidebar').classList.remove('closed');
+
+        // Hide dashboard area
+        document.querySelector('.main-content').style.display = 'none';
+
+    } else {
+
+        // Desktop behavior unchanged
+        currentView = 'dashboard';
+        render();
+    }
 }
 /* ════════ DASHBOARD ════════ */
 function dashboardUI() {
@@ -1490,14 +1494,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btn && sidebar) {
 
-        // Show sidebar initially on mobile
-        if (window.innerWidth <= 768) {
-            sidebar.classList.add("open");
-        }
-
         btn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
+            sidebar.classList.toggle("closed");
         });
+
     }
 });
 </script>
